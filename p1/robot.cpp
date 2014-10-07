@@ -1,6 +1,10 @@
 #include <iostream>
+<<<<<<< HEAD
 #include <fstream>
 #include <vector>
+=======
+#include <fstream> //to read in a file
+>>>>>>> 7ba39f017a16a2b675ac5d496e3539f6209ed244
 
 using namespace std;
 
@@ -14,6 +18,7 @@ int main(int argc, char *argv[])
 		./robot Project1_input1.txt 0.1 SW NS NE W
 		North, South, West, East
 	**/
+<<<<<<< HEAD
    vector< vector<int> > vector_map;
    int output;
 
@@ -43,4 +48,24 @@ int main(int argc, char *argv[])
 
 	} 
 	return 0;
+=======
+	int map_file[][];//string line;
+    ifstream inputFile (argv[1]);
+    if (inputFile.is_open())
+    {
+       while ( getline (inputFile,line) )
+       {
+          cout << line << '\n';
+       }
+       inputFile.close();
+    }
+
+  else cout << "Unable to open file";
+	int map_array [sizeX][sizeY];
+
+	int** ary = new int*[sizeX];
+	for(int i = 0; i < sizeX; ++i)
+	    ary[i] = new int[sizeY];
+		return 0;
+>>>>>>> 7ba39f017a16a2b675ac5d496e3539f6209ed244
 }
