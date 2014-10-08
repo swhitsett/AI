@@ -33,7 +33,12 @@ int main(int argc, char *argv[])
 			-- coresponding value?? the one before?
 
 	**/
+
 	probOfError(atof(argv[2]));
+	string directionArray[argc];
+
+	for(int i=3;i < argc -1;i++)
+		directionArray[i-3] = argv[i];
 
    ifstream openFile;
    openFile.open(argv[1]);
@@ -57,8 +62,6 @@ int main(int argc, char *argv[])
 		}
 		openFile.close();
 	}
-	
-
 	return 0;
 }
 
@@ -90,6 +93,6 @@ void probOfError(double error)
 	for(int i=0;i<5;i++)
 	{
 		errorArray[i] = pow(error, i)*pow((1 - error),(4-i));
-		cout<<errorArray[i]<<endl;
+		//cout<<errorArray[i]<<endl;
 	}
 }
