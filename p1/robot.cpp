@@ -84,13 +84,19 @@ int main(int argc, char *argv[])
 		openFile.close();
 	}
 
-	double tranverse_Matrix[x_component][y_component];
+	int matrix_length = x_component * y_component;
+	double tranverse_Matrix[matrix_length][matrix_length];
 
-	for(int y = 0; y < vector_map.size(); y++)
+	for(int j = 0; j < vector_map.size(); j++)
 	{
-		for(int x = 0; x < vector_map.at(y).size();x++)
+		for(int i = 0; i < vector_map.at(j).size();i++)
 		{
-			//cout<<vector_map[y][x]<< " ";  damit its backwards
+			/**cout<<vector_map[j][i]<< " ";  damit its backwards
+				
+				so if their is neighbors ie 0011 aka NS. check x+1 x-1
+			**/
+			int total_neighbors = numberOfBitsThatAreDifferent(vector_map[j][i], 15);
+			string binary_cell_value = intToBinary(vector_map[i][j]);
 		}
 		cout<<"\n";
 	}
@@ -131,8 +137,6 @@ void probOfError(double error)
 
 bool foundIn(string word, string letter)
 {
-
-	//std::size_t found = word.find("N");
   	if (word.find(letter) != std::string::npos)
     	return true;
   	else
