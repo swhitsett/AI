@@ -16,6 +16,7 @@ vector< vector<int> > vector_map;
 string toBinary(int);
 void printArray();
 void probOfError(double);
+bool foundIn(string,string);
 
 int main(int argc, char *argv[])
 {
@@ -33,12 +34,28 @@ int main(int argc, char *argv[])
 			-- coresponding value?? the one before?
 
 	**/
+	string directionArray[argc]; //may need to be i - 3 need to repari code below
+	int directionValues[argc - 3];
+	int x_component;
+	int y_component;
 
 	probOfError(atof(argv[2]));
-	string directionArray[argc];
 
-	for(int i=3;i < argc -1;i++)
+	for(int i=3;i < argc;i++)
 		directionArray[i-3] = argv[i];
+
+	for(int i= 0; i < argc -3;i++)
+	{
+		int value = 0;
+		string temp_word = directionArray[i];
+
+		if(foundIn(temp_word,"N")) value += 8;
+		if(foundIn(temp_word,"S")) value += 4;
+		if(foundIn(temp_word,"W")) value += 2;
+		if(foundIn(temp_word,"E")) value += 1;
+
+		directionValues[i] = value;
+	}
 
    ifstream openFile;
    openFile.open(argv[1]);
@@ -58,9 +75,24 @@ int main(int argc, char *argv[])
 		      x.push_back(number);
 
 		   vector_map.push_back(x);
+
+		   x_component = x.size();
+		   y_component = vector_map.size();
+
 		   x.clear();
 		}
 		openFile.close();
+	}
+
+	double tranverse_Matrix[x_component][y_component];
+
+	for(int y = 0; y < vector_map.size(); y++)
+	{
+		for(int x = 0; x < vector_map.at(y).size();x++)
+		{
+			//cout<<vector_map[y][x]<< " ";  damit its backwards
+		}
+		cout<<"\n";
 	}
 	return 0;
 }
@@ -76,11 +108,11 @@ string toBinary(int val)
 
 void printArray()
 {
-	for(vector< vector<int> >::iterator xt = vector_map.begin(); xt != vector_map.end(); ++xt)
+	for(vector< vector<int> >::iterator yt = vector_map.begin(); yt != vector_map.end(); ++yt)
 	{
-		for(vector<int>::iterator yt = xt->begin(); yt != xt->end(); ++yt)
+		for(vector<int>::iterator xt = yt->begin(); xt != yt->end(); ++xt)
 		{
-			cout<< *yt<<" ";
+			cout<< *xt<<" ";
 		}
 		cout<<"\n";
 	}
@@ -95,4 +127,14 @@ void probOfError(double error)
 		errorArray[i] = pow(error, i)*pow((1 - error),(4-i));
 		//cout<<errorArray[i]<<endl;
 	}
+}
+
+bool foundIn(string word, string letter)
+{
+
+	//std::size_t found = word.find("N");
+  	if (word.find(letter) != std::string::npos)
+    	return true;
+  	else
+   	return false; 
 }
