@@ -17,6 +17,7 @@ string toBinary(int);
 void printArray();
 void probOfError(double);
 bool foundIn(string,string);
+int numberOfNeighbors(int);
 
 int main(int argc, char *argv[])
 {
@@ -94,11 +95,20 @@ int main(int argc, char *argv[])
 			/**cout<<vector_map[j][i]<< " ";  damit its backwards
 				
 				so if their is neighbors ie 0011 aka NS. check x+1 x-1
+
+				// tranverse_Matrix[j][M]
+				// int total_neighbors = numberOfBitsThatAreDifferent(vector_map[j][i], 15);
+				// string binary_cell_value = intToBinary(vector_map[j][i]);
+				// tranverse_Matrix[j][i] = 1/total_neighbors; ??
 			**/
-			int total_neighbors = numberOfBitsThatAreDifferent(vector_map[j][i], 15);
-			string binary_cell_value = intToBinary(vector_map[i][j]);
+
+				//all this may need to be in a loop
+			int neighbor_num = numberOfNeighbors(vector_map[j][i]); 				// returns amount of neighbors int
+			string binary_cell_value = toBinary(vector_map[j][i]);                 // returns the string version of the binary value
+
+			double cell_probality = 1/neighbor_num
+			
 		}
-		cout<<"\n";
 	}
 	return 0;
 }
@@ -141,4 +151,19 @@ bool foundIn(string word, string letter)
     	return true;
   	else
    	return false; 
+}
+
+int numberOfNeighbors(int direction_value)
+{
+	int diff_amount = 0;
+	string binary_val = toBinary(direction_value);
+	string binary_denomator = toBinary(15);   //all ones 1111
+
+
+	for(int i=0;i<5;i++)
+		if(binary_val[i] != binary_denomator[i]) 
+			diff_amount++;
+
+
+	return diff_amount;
 }
