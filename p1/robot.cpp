@@ -12,6 +12,7 @@ using namespace std;
 double percent_error;
 double errorArray[5];
 vector< vector<int> > vector_map;
+vector< vector<double> > transivity_Matrix;
 
 string toBinary(int);
 void printArray();
@@ -86,56 +87,28 @@ int main(int argc, char *argv[])
 	}
 
 	int matrix_length = x_component * y_component;
-	double tranverse_Matrix[matrix_length][matrix_length];
+	//double transivity_Matrix[matrix_length][matrix_length];
 	double test[vector_map.size()][vector_map.at(0).size()];
+
+	for(int j = 0; j < matrix_length; j++)
+		for(int i = 0; i < matrix_length;i++) // set to 0
+			transivity_Matrix.at(j).push_back(0.0);
 
 	for(int j = 0; j < vector_map.size(); j++)
 	{
 		for(int i = 0; i < vector_map.at(j).size();i++)
 		{
-			/**cout<<vector_map[j][i]<< " ";  damit its backwards
-				
-				so if their is neighbors ie 0011 aka NS. check x+1 x-1
-
-				// tranverse_Matrix[j][M]
-				// int total_neighbors = numberOfBitsThatAreDifferent(vector_map[j][i], 15);
-				// string binary_cell_value = intToBinary(vector_map[j][i]);
-				// tranverse_Matrix[j][i] = 1/total_neighbors; ??
-			**/
-
-				//all this may need to be in a loop
+			/**cout<<vector_map[j][i]<< " ";  damit its backwards**/
 
 			int neighbor_num = numberOfNeighbors(vector_map[j][i]); 				// returns amount of neighbors int
-			string binary_cell_value = toBinary(vector_map[j][i]);                 // returns the string version of the binary value
-			//double cell_probality = 1/neighbor_num; // this will cause a floating point error.
+			string binary_cell_value = toBinary(vector_map[j][i]);            // returns the string version of the binary value
 
 			//cout<< binary_cell_value<<endl;
-			// if(binary_cell_value[0] == '0') test[j-1][i] = 1.0/neighbor_num;
-			// if(binary_cell_value[1] == '0') test[j+1][i] = 1.0/neighbor_num;
-			// if(binary_cell_value[2] == '0') test[j][i-1] = 1.0/neighbor_num;
-			// if(binary_cell_value[3] == '0') test[j][i+1] = 1.0/neighbor_num;
-			for(int j = 0; j < 6; j++)
-			{
-				for(int i = 0; i < 6;i++)
-					tranverse_Matrix[j][i] = 0;
-			}
-			for(int a=0;a < matrix_length;a++)
-			{
-				if(binary_cell_value[0] == '0') tranverse_Matrix[a-1][a] = 1.0/neighbor_num;
-				if(binary_cell_value[1] == '0') tranverse_Matrix[a+1][a] = 1.0/neighbor_num;
-				if(binary_cell_value[2] == '0') tranverse_Matrix[a][a-1] = 1.0/neighbor_num;
-				if(binary_cell_value[3] == '0') tranverse_Matrix[a][a+1] = 1.0/neighbor_num;
-			}
-
-			
+			if(binary_cell_value[0] == '0') transivity_Matrix[j][i] = 1.0/neighbor_num;
+			if(binary_cell_value[1] == '0') transivity_Matrix[j][i] = 1.0/neighbor_num;
+			if(binary_cell_value[2] == '0') transivity_Matrix[j][i-1] = 1.0/neighbor_num;
+			if(binary_cell_value[3] == '0') transivity_Matrix[j][i+1] = 1.0/neighbor_num;
 		}
-	}
-	for(int j = 0; j < 6; j++)
-	{
-		for(int i = 0; i < 6;i++)
-			cout<<tranverse_Matrix[j][i]<< " ";
-
-		cout<<"\n";
 	}
 	return 0;
 }
