@@ -114,11 +114,7 @@ int main(int argc, char *argv[])
 			// if(binary_cell_value[1] == '0') test[j+1][i] = 1.0/neighbor_num;
 			// if(binary_cell_value[2] == '0') test[j][i-1] = 1.0/neighbor_num;
 			// if(binary_cell_value[3] == '0') test[j][i+1] = 1.0/neighbor_num;
-			for(int j = 0; j < 6; j++)
-			{
-				for(int i = 0; i < 6;i++)
-					tranverse_Matrix[j][i] = 0;
-			}
+
 			for(int a=0;a < matrix_length;a++)
 			{
 				if(binary_cell_value[0] == '0') tranverse_Matrix[a-1][a] = 1.0/neighbor_num;
@@ -130,13 +126,13 @@ int main(int argc, char *argv[])
 			
 		}
 	}
-	for(int j = 0; j < 6; j++)
-	{
-		for(int i = 0; i < 6;i++)
-			cout<<tranverse_Matrix[j][i]<< " ";
+	// for(int j = 0; j < 6; j++)
+	// {
+	// 	for(int i = 0; i < 6;i++)
+	// 		cout<<tranverse_Matrix[j][i]<< " ";
 
-		cout<<"\n";
-	}
+	// 	cout<<"\n";
+	// }
 	return 0;
 }
 
