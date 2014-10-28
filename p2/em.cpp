@@ -44,11 +44,11 @@ int main (int argc,char* argv[])
 		   	openFile >> num;
 
 			   if(i < 3)
-			   	BLMtransition[0][i] = num; 
+			   	BLMtransition[0][i] = -log2(num); 
 			   if(i < 6)
-			   	BLMtransition[1][i-3] = num;
+			   	BLMtransition[1][i-3] = -log2(num);
 			   if(i < 9)
-			   	BLMtransition[2][i-6] = num;
+			   	BLMtransition[2][i-6] = -log2(num);
 			   i++;
 			}
 			openFile.close();
@@ -98,29 +98,37 @@ int main (int argc,char* argv[])
 	   	ViterbiTable[i][0] = -log2(0.333333); // assuming that the states are 3 aka 1/3
 
 	   int rowWalk = observationInput.size();
-   	for(int c = 1; c < rowWalk; c++) // this is 1 to avoid the spot where x is inputed
-   	{											//for verbiti table colum
-   		double min = 0.0;
-   		for(int r = 0; r < 3; r++)		//for verbiti tabel row
-   		{
-   			bool initalize = false;
-   			for(int x = 0; x < 3; x++) //for transition table colum
-   			{
-   				double calc = ViterbiTable[r][c-1] + BLMtransition[r][x];
-   				if(!initalize)
-   				{
-   					initalize = true;
-   					min = calc;
-   				}
+		for(int c = 1; c < rowWalk; c++) // this is 1 to avoid the spot where x is inputed
+		{											//for verbiti table colum
+			double min = 0.0;
+			for(int r = 0; r < 3; r++)		//for verbiti tabel row
+			{
+				bool initalize = false;
+				for(int x = 0; x < 3; x++) //for transition table colum
+				{
+					double calc = ViterbiTable[r][c-1] + BLMtransition[r][x];
+					if(!initalize)
+					{
+						initalize = true;
+						min = calc;
+					}
 
-   				if(calc < min && initalize)
-   					min = calc;
-   			}
+					if(calc < min && initalize)
+						min = calc;
+				}
 
-   			initalize = false;
-   			ViterbiTable[r][c] = min;
-   		}
-   	}
+				initalize = false;
+
+				// if(observed[c-1] == 'H') // c-1 will set to the start ofthe input string
+				// 	min = min * BLMsensory[r][0];
+				// else
+				// 	min = min * BLMsensory[r][1];
+
+				// ViterbiTable[r][c] = min;
+			}
+			//for observationInput[c] == h
+			// min * observationInput[c];
+		}
 
 	}
 	return 0;
