@@ -14,7 +14,7 @@ using namespace std;
 
 string observationInput; //observation aka ththhht
 string originalInput;
-double BLMarray[3][3];
+double BLMtransition[3][3];
 double BLMsensory[3][2];
 
 
@@ -44,11 +44,11 @@ int main (int argc,char* argv[])
 		   	openFile >> num;
 
 			   if(i < 3)
-			   	BLMarray[0][i] = num; 
+			   	BLMtransition[0][i] = num; 
 			   if(i < 6)
-			   	BLMarray[1][i-3] = num;
+			   	BLMtransition[1][i-3] = num;
 			   if(i < 9)
-			   	BLMarray[2][i-6] = num;
+			   	BLMtransition[2][i-6] = num;
 			   i++;
 			}
 			openFile.close();
@@ -93,11 +93,34 @@ int main (int argc,char* argv[])
 	   }
 	   openFile.close();
 //--------------------------- read in functions above-------------------------
-	   double ViterbiTable[3][observationInput.size()];
+	   double ViterbiTable[3][observationInput.size()+1];
 	   for(int i = 0; i < 3; i++)
-	   	ViterbiTable[i][0] = -log2(0.333333);
+	   	ViterbiTable[i][0] = -log2(0.333333); // assuming that the states are 3 aka 1/3
 
-	   cout<<ViterbiTable[0][0];
+	   int rowWalk = observationInput.size();
+   	for(int c = 1; c < rowWalk; c++) // this is 1 to avoid the spot where x is inputed
+   	{											//for verbiti table colum
+   		double min = 0.0;
+   		for(int r = 0; r < 3; r++)		//for verbiti tabel row
+   		{
+   			bool initalize = false;
+   			for(int x = 0; x < 3; x++) //for transition table colum
+   			{
+   				double calc = ViterbiTable[r][c-1] + BLMtransition[r][x];
+   				if(!initalize)
+   				{
+   					initalize = true;
+   					min = calc;
+   				}
+
+   				if(calc < min && initalize)
+   					min = calc;
+   			}
+
+   			initalize = false;
+   			ViterbiTable[r][c] = min;
+   		}
+   	}
 
 	}
 	return 0;
