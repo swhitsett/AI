@@ -21,7 +21,7 @@ double BLMsensory[3][2];
 int main (int argc,char* argv[])
 {
 	//./em observations.txt transition.txt sensory.txt original.txt k
-	if(argc == 4)
+	if(argc == 5)
 	{
 		//observations
 	   ifstream openFile;
@@ -107,7 +107,6 @@ int main (int argc,char* argv[])
 				for(int x = 0; x < 3; x++) //for transition table colum
 				{
 					double calc = ViterbiTable[x][c-1] + BLMtransition[r][x];
-					//cout << ViterbiTable[x][c-1]<<" + "<< BLMtransition[r][x]<<" =  \n";
 					if(!initalize)
 					{
 						initalize = true;
@@ -117,38 +116,29 @@ int main (int argc,char* argv[])
 					if(calc < min && initalize)
 						min = calc;
 				}
-				cout<<"\n";
-				// initalize = false;
 
 				char observed[observationInput.size()];
 				for(int a=0;a<observationInput.size();a++)
-				{
 					observed[a] = observationInput[a]; 
-					cout<<observed[a]<<" ";
-				}
+
 				if(observed[c-1] == 'H') // c-1 will set to the start ofthe input string
 					min = min + BLMsensory[r][0];
 				else
 					min = min + BLMsensory[r][1];
 
-				// if(r==2 && observed[c-1] == 'H')
-				// 	cout<<min<<"  "<<BLMsensory[r][0]<<endl;
-				// if(r==2 && observed[c-1] == 'T')
-				// 	cout<<min<<"  "<<BLMsensory[r][1]<<endl;
-
 				ViterbiTable[r][c] = min;
 			}
 
 		}
-		for(int i=0; i<observationInput.size()+1;i++)
-			cout<<ViterbiTable[0][i]<<" ";
-		cout<<"\n";
-		for(int i=0; i<observationInput.size()+1;i++)
-			cout<<ViterbiTable[1][i]<<" ";
-		cout<<"\n";
-		for(int i=0; i<observationInput.size()+1;i++)
-			cout<<ViterbiTable[2][i]<<" ";
-		cout<<"\n";
+		// for(int i=0; i<observationInput.size()+1;i++)
+		// 	cout<<ViterbiTable[0][i]<<" ";
+		// cout<<"\n";
+		// for(int i=0; i<observationInput.size()+1;i++)
+		// 	cout<<ViterbiTable[1][i]<<" ";
+		// cout<<"\n";
+		// for(int i=0; i<observationInput.size()+1;i++)
+		// 	cout<<ViterbiTable[2][i]<<" ";
+		// cout<<"\n";
 
 	}
 	return 0;
