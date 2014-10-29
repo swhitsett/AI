@@ -21,7 +21,7 @@ double BLMsensory[3][2];
 int main (int argc,char* argv[])
 {
 	//./em observations.txt transition.txt sensory.txt original.txt k
-	if(argc == 5)
+	if(argc == 6)
 	{
 		//observations
 	   ifstream openFile;
@@ -130,7 +130,7 @@ int main (int argc,char* argv[])
 			}
 
 		}
-				// for(int i=0; i<observationInput.size()+1;i++)
+		// for(int i=0; i<observationInput.size()+1;i++)
 		// 	cout<<ViterbiTable[0][i]<<" ";
 		// cout<<"\n";
 		// for(int i=0; i<observationInput.size()+1;i++)
@@ -140,20 +140,52 @@ int main (int argc,char* argv[])
 		// 	cout<<ViterbiTable[2][i]<<" ";
 		// cout<<"\n";
 //---------------------------original table creation above----------------------------
-		int wordCount = 0;
+		double amountInString = 0.0;
+		double relationCount = 0.0;
+
+		double newTable[3][3];
 		char curLetter[3] = {'B','L','M'};
-		char observed[observationInput.size()];
-		for(int a=0;a<observationInput.size();a++)
-			observed[a] = observationInput[a]; 
+		char observed[originalInput.size()];
+		for(int a=0;a<originalInput.size();a++)
+			observed[a] = originalInput[a]; 
 
-		int L = 0;
-		for(int i=1;i<observationInput.size();i++)
+		int L = 0;  //B|L
+		for(int j=0; j<3; j++) // table row
 		{
-			if(observed[i] == 'B' && observed[i-1] == curLetter[L])
-				wordCount++;
-		}
+			for(int l=0; l<3; l++) // table colum
+			{
+				for(int i=1;i<originalInput.size()+1;i++) // observation itteration
+				{
+					//cout<<observed[i-1]<< "  " << curLetter[j]<<endl;
+					if(observed[i-1] == curLetter[j])
+					{
+						amountInString++;
+					}
+					if(observed[i] == curLetter[j] && observed[i-1] == curLetter[l])
+					{
+						relationCount++;
+					}
+				}
+				cout<<relationCount<<endl;
+				newTable[j][l] = relationCount/amountInString;
+				amountInString = 0.0;
+				relationCount = 0.0;
+			}
 
-		answer = (wordCount + k)/
+
+		}	
+		for(int i=0; i<3;i++)
+			cout<<newTable[0][i]<<" ";
+		cout<<"\n";
+		for(int i=0; i<3;i++)
+			cout<<newTable[1][i]<<" ";
+		cout<<"\n";
+		for(int i=0; i<3;i++)
+			cout<<newTable[2][i]<<" ";
+		cout<<"\n";
+		//answer = relationCount/amountInString;
+
+		// answer = (wordCount + k)/
 
 
 	}
