@@ -130,7 +130,7 @@ int main (int argc,char* argv[])
 			}
 
 		}
-		// for(int i=0; i<observationInput.size()+1;i++)
+				// for(int i=0; i<observationInput.size()+1;i++)
 		// 	cout<<ViterbiTable[0][i]<<" ";
 		// cout<<"\n";
 		// for(int i=0; i<observationInput.size()+1;i++)
@@ -139,6 +139,22 @@ int main (int argc,char* argv[])
 		// for(int i=0; i<observationInput.size()+1;i++)
 		// 	cout<<ViterbiTable[2][i]<<" ";
 		// cout<<"\n";
+//---------------------------original table creation above----------------------------
+		int wordCount = 0;
+		char curLetter[3] = {'B','L','M'};
+		char observed[observationInput.size()];
+		for(int a=0;a<observationInput.size();a++)
+			observed[a] = observationInput[a]; 
+
+		int L = 0;
+		for(int i=1;i<observationInput.size();i++)
+		{
+			if(observed[i] == 'B' && observed[i-1] == curLetter[L])
+				wordCount++;
+		}
+
+		answer = (wordCount + k)/
+
 
 	}
 	return 0;
