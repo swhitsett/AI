@@ -66,18 +66,18 @@ int main (int argc,char* argv[])
 
 	   		if(i == 0)
 	   		{
-	   			BLMsensory[0][0] = line;
-	   			BLMsensory[0][1] = 1.0 -line;
+	   			BLMsensory[0][0] = -log2(line);
+	   			BLMsensory[0][1] = -log2(1.0 - line);
 	   		}
 	   		else if (i == 1)
 	   		{
-	   			BLMsensory[1][0] = line;
-	   			BLMsensory[1][1] = 1.0 -line;
+	   			BLMsensory[1][0] = -log2(line);
+	   			BLMsensory[1][1] = -log2(1.0 -line);
 	   		}
-	   		else if (i == 3)
+	   		else if (i == 2)
 	   		{
-	   			BLMsensory[2][0] = line;
-	   			BLMsensory[2][1] = 1.0 -line;
+	   			BLMsensory[2][0] = -log2(line);
+	   			BLMsensory[2][1] = -log2(1.0 - line);
 	   		}
 	   		i++;
 	   		//cout<<line<<endl;
@@ -95,9 +95,9 @@ int main (int argc,char* argv[])
 //--------------------------- read in functions above-------------------------
 	   double ViterbiTable[3][observationInput.size()+1];
 	   for(int i = 0; i < 3; i++)
-	   	ViterbiTable[i][0] = -log2(0.333333); // assuming that the states are 3 aka 1/3
+	   	ViterbiTable[i][0] = -log2(0.333333333); // assuming that the states are 3 aka 1/3
 
-	   int rowWalk = observationInput.size();
+	   int rowWalk = observationInput.size()+1;
 		for(int c = 1; c < rowWalk; c++) // this is 1 to avoid the spot where x is inputed
 		{											//for verbiti table colum
 			double min = 0.0;
@@ -106,7 +106,8 @@ int main (int argc,char* argv[])
 				bool initalize = false;
 				for(int x = 0; x < 3; x++) //for transition table colum
 				{
-					double calc = ViterbiTable[r][c-1] + BLMtransition[r][x];
+					double calc = ViterbiTable[x][c-1] + BLMtransition[r][x];
+					//cout << ViterbiTable[x][c-1]<<" + "<< BLMtransition[r][x]<<" =  \n";
 					if(!initalize)
 					{
 						initalize = true;
@@ -116,19 +117,38 @@ int main (int argc,char* argv[])
 					if(calc < min && initalize)
 						min = calc;
 				}
+				cout<<"\n";
+				// initalize = false;
 
-				initalize = false;
+				char observed[observationInput.size()];
+				for(int a=0;a<observationInput.size();a++)
+				{
+					observed[a] = observationInput[a]; 
+					cout<<observed[a]<<" ";
+				}
+				if(observed[c-1] == 'H') // c-1 will set to the start ofthe input string
+					min = min + BLMsensory[r][0];
+				else
+					min = min + BLMsensory[r][1];
 
-				// if(observed[c-1] == 'H') // c-1 will set to the start ofthe input string
-				// 	min = min * BLMsensory[r][0];
-				// else
-				// 	min = min * BLMsensory[r][1];
+				// if(r==2 && observed[c-1] == 'H')
+				// 	cout<<min<<"  "<<BLMsensory[r][0]<<endl;
+				// if(r==2 && observed[c-1] == 'T')
+				// 	cout<<min<<"  "<<BLMsensory[r][1]<<endl;
 
-				// ViterbiTable[r][c] = min;
+				ViterbiTable[r][c] = min;
 			}
-			//for observationInput[c] == h
-			// min * observationInput[c];
+
 		}
+		for(int i=0; i<observationInput.size()+1;i++)
+			cout<<ViterbiTable[0][i]<<" ";
+		cout<<"\n";
+		for(int i=0; i<observationInput.size()+1;i++)
+			cout<<ViterbiTable[1][i]<<" ";
+		cout<<"\n";
+		for(int i=0; i<observationInput.size()+1;i++)
+			cout<<ViterbiTable[2][i]<<" ";
+		cout<<"\n";
 
 	}
 	return 0;
