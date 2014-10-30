@@ -185,7 +185,7 @@ int main (int argc,char* argv[])
 			{
 				for(int i=1;i<originalInput.size()+1;i++) 				// observation itteration
 				{
-					if(backTrace2[i-1] == curLetter[j])
+					if(backTrace2[i-1] == curLetter[l])   // changed the curLetter[j] to curLetter[l] to get it to work.
 					{
 						amountInString++;
 					}
