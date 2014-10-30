@@ -140,14 +140,14 @@ int main (int argc,char* argv[])
 
 		}
 		for(int i=0; i<observationInput.size()+1;i++)
-			cout<<backTraceTable[0][i]<<" ";
+			cout<<ViterbiTable[0][i]<<" ";
 		cout<<"\n";
 		for(int i=0; i<observationInput.size()+1;i++)
-			cout<<backTraceTable[1][i]<<" ";
+			cout<<ViterbiTable[1][i]<<" ";
 		cout<<"\n";
 		for(int i=0; i<observationInput.size()+1;i++)
-			cout<<backTraceTable[2][i]<<" ";
-		cout<<"\n";
+			cout<<ViterbiTable[2][i]<<" ";
+		cout<<"\n\n";
 // ------------------------------------creating backtrack array----------------------------------------
 		int backTrace2[observationInput.size()];
 		int minFinalValue = 0;
@@ -172,18 +172,18 @@ int main (int argc,char* argv[])
 		double amountInString = 0.0;
 		double relationCount = 0.0;
 
-		double newTable[3][3];
+		double transtionModelTable[3][3];
 		int curLetter[3] = {0, 1, 2};
 		// char observed[originalInput.size()];
 		// for(int a=0;a<originalInput.size();a++)
 		// 	observed[a] = originalInput[a]; 
 
-		int L = 0;  //B|L
+		//int L = 0;  //B|L
 		for(int j=0; j<3; j++) // table row
 		{
 			for(int l=0; l<3; l++) // table colum
 			{
-				for(int i=1;i<originalInput.size()+1;i++) 				// observation itteration
+				for(int i=1;i<observationInput.size()+1;i++) 				// observation itteration
 				{
 					if(backTrace2[i-1] == curLetter[l])   // changed the curLetter[j] to curLetter[l] to get it to work.
 					{
@@ -194,9 +194,7 @@ int main (int argc,char* argv[])
 						relationCount++;
 					}
 				}
-				cout<<relationCount<<" + 1/ "<< amountInString<<" + 3*1"<<endl;;
-				//cout<<(amountInString + relationCount*1)<<endl;
-				newTable[j][l] = (relationCount + 1)/(amountInString + 3*1);
+				transtionModelTable[j][l] = (relationCount + 1)/(amountInString + 3*1);
 				amountInString = 0.0;
 				relationCount = 0.0;
 			}
@@ -204,14 +202,56 @@ int main (int argc,char* argv[])
 
 		}	
 		for(int i=0; i<3;i++)
-			cout<<newTable[0][i]<<" ";
+			cout<<transtionModelTable[0][i]<<" ";
 		cout<<"\n";
 		for(int i=0; i<3;i++)
-			cout<<newTable[1][i]<<" ";
+			cout<<transtionModelTable[1][i]<<" ";
 		cout<<"\n";
 		for(int i=0; i<3;i++)
-			cout<<newTable[2][i]<<" ";
+			cout<<transtionModelTable[2][i]<<" ";
+		cout<<"\n\n";
+//-------------------------------------------------transformitive moddle above------------------------------------------------------
+
+
+		double sensoryModelTable[3][3];
+		char headOrTales[2] = {'H', 'T'};
+		char observed[observationInput.size()];
+		for(int a=0;a<observationInput.size();a++)
+			observed[a] = observationInput[a]; 
+
+		//int L = 0;  //B|L
+		for(int j=0; j<3; j++) // table row
+		{
+			for(int l=0; l<2; l++) // table colum
+			{
+				for(int i=1;i<observationInput.size()+1;i++) 				// observation itteration
+				{
+					if(backTrace2[i-1] == j)   //if the backTrace2 array contains a b l m
+					{
+						amountInString++;
+					}
+					if(backTrace2[i] == j && observed[i-1] == headOrTales[l])
+					{
+						relationCount++;
+					}
+				}
+				sensoryModelTable[j][l] = (relationCount + 1)/(amountInString + 2*1);
+				amountInString = 0.0;
+				relationCount = 0.0;
+			}
+
+
+		}
+
+		for(int i=0; i<2;i++)
+			cout<<sensoryModelTable[0][i]<<" ";
 		cout<<"\n";
+		for(int i=0; i<2;i++)
+			cout<<sensoryModelTable[1][i]<<" ";
+		cout<<"\n";
+		for(int i=0; i<2;i++)
+			cout<<sensoryModelTable[2][i]<<" ";
+		cout<<"\n\n";
 
 	}
 	return 0;
