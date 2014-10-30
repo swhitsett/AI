@@ -136,8 +136,6 @@ int main (int argc,char* argv[])
 
 				ViterbiTable[r][c] = min;
 			}
-			// cout<<backTrace1<<endl;
-
 		}
 		for(int i=0; i<observationInput.size()+1;i++)
 			cout<<ViterbiTable[0][i]<<" ";
@@ -198,8 +196,6 @@ int main (int argc,char* argv[])
 				amountInString = 0.0;
 				relationCount = 0.0;
 			}
-
-
 		}	
 		for(int i=0; i<3;i++)
 			cout<<transtionModelTable[0][i]<<" ";
@@ -239,8 +235,6 @@ int main (int argc,char* argv[])
 				amountInString = 0.0;
 				relationCount = 0.0;
 			}
-
-
 		}
 
 		for(int i=0; i<2;i++)
@@ -252,6 +246,83 @@ int main (int argc,char* argv[])
 		for(int i=0; i<2;i++)
 			cout<<sensoryModelTable[2][i]<<" ";
 		cout<<"\n\n";
+//----------------------------------------sensory model above-----------------------------
+
+	   double ViterbiTableTwo[3][observationInput.size()+1];
+	   int backTraceTableTwo[3][observationInput.size()+1];
+	   for(int i = 0; i < 3; i++)
+	      ViterbiTableTwo[i][0] = -log2(0.333333333); 							// assuming that the states are 3 aka 1/3
+	   for(int i = 0; i < 3; i++)													//backtrace Table Initlization.
+	      backTraceTableTwo[i][0] = 0;
+
+	    //int rowWalk = observationInput.size()+1;
+		for(int c = 1; c < rowWalk; c++) 										// this is 1 to avoid the spot where x is inputed
+		{																					//for verbiti table colum
+			double min = 0.0;
+			for(int r = 0; r < 3; r++)												//for verbiti tabel row
+			{
+				int forBackTrace = 0;
+				bool initalize = false;
+				for(int x = 0; x < 3; x++) 										//for transition table colum
+				{
+					double calc = ViterbiTableTwo[x][c-1] + -log2(transtionModelTable[r][x]);
+					if(!initalize)
+					{
+						initalize = true;
+						min = calc;
+						backTraceTableTwo[r][c] = x;
+					}
+
+					if(calc < min && initalize)
+					{
+						min = calc;
+						backTraceTableTwo[r][c] = x;
+					}
+				}
+
+				char observed[observationInput.size()];
+				for(int a=0;a<observationInput.size();a++)
+					observed[a] = observationInput[a]; 
+
+				if(observed[c-1] == 'H') 											// c-1 will set to the start ofthe input string
+					min = min + (-log2(sensoryModelTable[r][0]));
+				else
+					min = min + (-log2(sensoryModelTable[r][1]));
+
+				ViterbiTableTwo[r][c] = min;
+			}
+		}
+		for(int i=0; i<observationInput.size()+1;i++)
+			cout<<ViterbiTableTwo[0][i]<<" ";
+		cout<<"\n";
+		for(int i=0; i<observationInput.size()+1;i++)
+			cout<<ViterbiTableTwo[1][i]<<" ";
+		cout<<"\n";
+		for(int i=0; i<observationInput.size()+1;i++)
+			cout<<ViterbiTableTwo[2][i]<<" ";
+		cout<<"\n\n";
+//----------------------------------sceond verbiti table above-----------------------------------
+
+		int backTrace4[observationInput.size()];
+		minFinalValue = 0;//int minFinalValue = 0;
+		//double curVal = ViterbiTable[0][observationInput.size()];
+		for(int i=0; i<3; i++)
+		{
+			if( ViterbiTableTwo[i][observationInput.size()] < curVal)
+				minFinalValue = i;
+		}
+
+		backTrace4[observationInput.size()] = minFinalValue;
+
+		for(int i=0; i < observationInput.size(); i++)
+		{
+			backTrace4[i-1] = backTraceTableTwo[minFinalValue][i]; 
+			minFinalValue = backTraceTableTwo[minFinalValue][i];
+		}
+
+		for(int i=0; i<observationInput.size()+1;i++)
+			cout<<backTrace4[i]<<" ";
+		cout<<"\n";
 
 	}
 	return 0;
