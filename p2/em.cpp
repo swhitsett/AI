@@ -16,7 +16,6 @@ string observationInput; //observation aka ththhht
 string originalInput;
 double BLMtransition[3][3];
 double BLMsensory[3][2];
-string backTrace1;
 
 
 int main (int argc,char* argv[])
@@ -97,17 +96,19 @@ int main (int argc,char* argv[])
 	   double ViterbiTable[3][observationInput.size()+1];
 	   int backTraceTable[3][observationInput.size()+1];
 	   for(int i = 0; i < 3; i++)
-	   	ViterbiTable[i][0] = -log2(0.333333333); // assuming that the states are 3 aka 1/3
+	   	ViterbiTable[i][0] = -log2(0.333333333); 							// assuming that the states are 3 aka 1/3
+	   for(int i = 0; i < 3; i++)													//backtrace Table Initlization.
+	   	backTraceTable[i][0] = 0;
 
 	   int rowWalk = observationInput.size()+1;
-		for(int c = 1; c < rowWalk; c++) // this is 1 to avoid the spot where x is inputed
-		{											//for verbiti table colum
+		for(int c = 1; c < rowWalk; c++) 										// this is 1 to avoid the spot where x is inputed
+		{																					//for verbiti table colum
 			double min = 0.0;
-			for(int r = 0; r < 3; r++)		//for verbiti tabel row
+			for(int r = 0; r < 3; r++)												//for verbiti tabel row
 			{
 				int forBackTrace = 0;
 				bool initalize = false;
-				for(int x = 0; x < 3; x++) //for transition table colum
+				for(int x = 0; x < 3; x++) 										//for transition table colum
 				{
 					double calc = ViterbiTable[x][c-1] + BLMtransition[r][x];
 					if(!initalize)
@@ -123,18 +124,12 @@ int main (int argc,char* argv[])
 						backTraceTable[r][c] = x;
 					}
 				}
-				// if(forBackTrace == 0)
-				// 	backTrace1 += "B";
-				// else if(forBackTrace == 1)
-				// 	backTrace1 += "L";
-				// else if(forBackTrace == 2)
-				// 	backTrace1 += "M";
 
 				char observed[observationInput.size()];
 				for(int a=0;a<observationInput.size();a++)
 					observed[a] = observationInput[a]; 
 
-				if(observed[c-1] == 'H') // c-1 will set to the start ofthe input string
+				if(observed[c-1] == 'H') 											// c-1 will set to the start ofthe input string
 					min = min + BLMsensory[r][0];
 				else
 					min = min + BLMsensory[r][1];
@@ -153,36 +148,55 @@ int main (int argc,char* argv[])
 		for(int i=0; i<observationInput.size()+1;i++)
 			cout<<backTraceTable[2][i]<<" ";
 		cout<<"\n";
-//---------------------------original table creation above----------------------------
+// ------------------------------------creating backtrack array----------------------------------------
+		int backTrace2[observationInput.size()];
+		int minFinalValue = 0;
+		double curVal = ViterbiTable[0][observationInput.size()];
+		for(int i=0; i<3; i++)
+		{
+			if( ViterbiTable[i][observationInput.size()] < curVal)
+				minFinalValue = i;
+		}
+
+		backTrace2[observationInput.size()] = minFinalValue;
+
+		for(int i=observationInput.size(); i > 0; i--)
+		{
+			backTrace2[i-1] = backTraceTable[minFinalValue][i]; 
+			minFinalValue = backTraceTable[minFinalValue][i];
+		}
+		// for(int i=0; i<observationInput.size()+1;i++)
+		// 	cout<<backTrace2[i]<<" ";
+		// cout<<"\n";
+//---------------------------original table creation above-----------------plus backtrack table-----------
 		double amountInString = 0.0;
 		double relationCount = 0.0;
 
 		double newTable[3][3];
-		char curLetter[3] = {'B','L','M'};
-		char observed[originalInput.size()];
-		for(int a=0;a<originalInput.size();a++)
-			observed[a] = originalInput[a]; 
+		int curLetter[3] = {0, 1, 2};
+		// char observed[originalInput.size()];
+		// for(int a=0;a<originalInput.size();a++)
+		// 	observed[a] = originalInput[a]; 
 
 		int L = 0;  //B|L
 		for(int j=0; j<3; j++) // table row
 		{
 			for(int l=0; l<3; l++) // table colum
 			{
-				for(int i=1;i<originalInput.size()+1;i++) // observation itteration
+				for(int i=1;i<originalInput.size()+1;i++) 				// observation itteration
 				{
-					//cout<<observed[i-1]<< "  " << curLetter[j]<<endl;
-					if(observed[i-1] == curLetter[j])
+					if(backTrace2[i-1] == curLetter[j])
 					{
 						amountInString++;
 					}
-					if(observed[i] == curLetter[j] && observed[i-1] == curLetter[l])
+					if(backTrace2[i] == curLetter[j] && backTrace2[i-1] == curLetter[l])
 					{
 						relationCount++;
 					}
 				}
-				//cout<<amountInString<<endl;
-				cout<<(amountInString + relationCount*1)<<endl;
-				newTable[j][l] = (relationCount + 1)/(amountInString + relationCount*1);
+				cout<<relationCount<<" + 1/ "<< amountInString<<" + 3*1"<<endl;;
+				//cout<<(amountInString + relationCount*1)<<endl;
+				newTable[j][l] = (relationCount + 1)/(amountInString + 3*1);
 				amountInString = 0.0;
 				relationCount = 0.0;
 			}
@@ -198,10 +212,6 @@ int main (int argc,char* argv[])
 		for(int i=0; i<3;i++)
 			cout<<newTable[2][i]<<" ";
 		cout<<"\n";
-		//answer = relationCount/amountInString;
-
-		// answer = (wordCount + k)/
-
 
 	}
 	return 0;
