@@ -16,6 +16,7 @@ string observationInput; //observation aka ththhht
 string originalInput;
 double BLMtransition[3][3];
 double BLMsensory[3][2];
+string backTrace1;
 
 
 int main (int argc,char* argv[])
@@ -94,6 +95,7 @@ int main (int argc,char* argv[])
 	   openFile.close();
 //--------------------------- read in functions above-------------------------
 	   double ViterbiTable[3][observationInput.size()+1];
+	   int backTraceTable[3][observationInput.size()+1];
 	   for(int i = 0; i < 3; i++)
 	   	ViterbiTable[i][0] = -log2(0.333333333); // assuming that the states are 3 aka 1/3
 
@@ -103,6 +105,7 @@ int main (int argc,char* argv[])
 			double min = 0.0;
 			for(int r = 0; r < 3; r++)		//for verbiti tabel row
 			{
+				int forBackTrace = 0;
 				bool initalize = false;
 				for(int x = 0; x < 3; x++) //for transition table colum
 				{
@@ -111,11 +114,21 @@ int main (int argc,char* argv[])
 					{
 						initalize = true;
 						min = calc;
+						backTraceTable[r][c] = x;
 					}
 
 					if(calc < min && initalize)
+					{
 						min = calc;
+						backTraceTable[r][c] = x;
+					}
 				}
+				// if(forBackTrace == 0)
+				// 	backTrace1 += "B";
+				// else if(forBackTrace == 1)
+				// 	backTrace1 += "L";
+				// else if(forBackTrace == 2)
+				// 	backTrace1 += "M";
 
 				char observed[observationInput.size()];
 				for(int a=0;a<observationInput.size();a++)
@@ -128,17 +141,18 @@ int main (int argc,char* argv[])
 
 				ViterbiTable[r][c] = min;
 			}
+			// cout<<backTrace1<<endl;
 
 		}
-		// for(int i=0; i<observationInput.size()+1;i++)
-		// 	cout<<ViterbiTable[0][i]<<" ";
-		// cout<<"\n";
-		// for(int i=0; i<observationInput.size()+1;i++)
-		// 	cout<<ViterbiTable[1][i]<<" ";
-		// cout<<"\n";
-		// for(int i=0; i<observationInput.size()+1;i++)
-		// 	cout<<ViterbiTable[2][i]<<" ";
-		// cout<<"\n";
+		for(int i=0; i<observationInput.size()+1;i++)
+			cout<<backTraceTable[0][i]<<" ";
+		cout<<"\n";
+		for(int i=0; i<observationInput.size()+1;i++)
+			cout<<backTraceTable[1][i]<<" ";
+		cout<<"\n";
+		for(int i=0; i<observationInput.size()+1;i++)
+			cout<<backTraceTable[2][i]<<" ";
+		cout<<"\n";
 //---------------------------original table creation above----------------------------
 		double amountInString = 0.0;
 		double relationCount = 0.0;
@@ -166,8 +180,9 @@ int main (int argc,char* argv[])
 						relationCount++;
 					}
 				}
-				cout<<relationCount<<endl;
-				newTable[j][l] = relationCount/amountInString;
+				//cout<<amountInString<<endl;
+				cout<<(amountInString + relationCount*1)<<endl;
+				newTable[j][l] = (relationCount + 1)/(amountInString + relationCount*1);
 				amountInString = 0.0;
 				relationCount = 0.0;
 			}
