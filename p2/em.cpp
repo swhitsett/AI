@@ -16,6 +16,7 @@ string observationInput; //observation aka ththhht
 string originalInput;
 double BLMtransition[3][3];
 double BLMsensory[3][2];
+int smoothingValue;
 
 
 int main (int argc,char* argv[])
@@ -92,6 +93,9 @@ int main (int argc,char* argv[])
 			getline(openFile,originalInput);
 	   }
 	   openFile.close();
+
+	   //smoothing value
+	   smoothingValue = atoi(argv[5]);
 //--------------------------- read in functions above-------------------------
 	   double ViterbiTable[3][observationInput.size()+1];
 	   int backTraceTable[3][observationInput.size()+1];
@@ -192,11 +196,12 @@ int main (int argc,char* argv[])
 						relationCount++;
 					}
 				}
-				transtionModelTable[j][l] = (relationCount + 1)/(amountInString + 3*1);
+				transtionModelTable[j][l] = (relationCount + 1)/(amountInString + 3*smoothingValue);
 				amountInString = 0.0;
 				relationCount = 0.0;
 			}
-		}	
+		}
+		cout<<"Transition Probalities Learned:"<<endl;	
 		for(int i=0; i<3;i++)
 			cout<<transtionModelTable[0][i]<<" ";
 		cout<<"\n";
@@ -231,12 +236,12 @@ int main (int argc,char* argv[])
 						relationCount++;
 					}
 				}
-				sensoryModelTable[j][l] = (relationCount + 1)/(amountInString + 2*1);
+				sensoryModelTable[j][l] = (relationCount + 1)/(amountInString + 2*smoothingValue);
 				amountInString = 0.0;
 				relationCount = 0.0;
 			}
 		}
-
+		cout<<"Sensory Probalites Learned:"<<endl;
 		for(int i=0; i<2;i++)
 			cout<<sensoryModelTable[0][i]<<" ";
 		cout<<"\n";
@@ -347,7 +352,8 @@ int main (int argc,char* argv[])
 		}
 
 		double finalProballity = ((double)count/(double)originalInput.size());
-		cout<<finalProballity<<endl;
+		cout<<"Accuracy:"<<endl;
+		cout<<finalProballity * 100<<"%"<<endl;
 
 
 	}
