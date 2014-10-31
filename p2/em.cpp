@@ -137,15 +137,15 @@ int main (int argc,char* argv[])
 				ViterbiTable[r][c] = min;
 			}
 		}
-		for(int i=0; i<observationInput.size()+1;i++)
-			cout<<ViterbiTable[0][i]<<" ";
-		cout<<"\n";
-		for(int i=0; i<observationInput.size()+1;i++)
-			cout<<ViterbiTable[1][i]<<" ";
-		cout<<"\n";
-		for(int i=0; i<observationInput.size()+1;i++)
-			cout<<ViterbiTable[2][i]<<" ";
-		cout<<"\n\n";
+		// for(int i=0; i<observationInput.size()+1;i++)
+		// 	cout<<ViterbiTable[0][i]<<" ";
+		// cout<<"\n";
+		// for(int i=0; i<observationInput.size()+1;i++)
+		// 	cout<<ViterbiTable[1][i]<<" ";
+		// cout<<"\n";
+		// for(int i=0; i<observationInput.size()+1;i++)
+		// 	cout<<ViterbiTable[2][i]<<" ";
+		// cout<<"\n\n";
 // ------------------------------------creating backtrack array----------------------------------------
 		int backTrace2[observationInput.size()];
 		int minFinalValue = 0;
@@ -292,20 +292,20 @@ int main (int argc,char* argv[])
 				ViterbiTableTwo[r][c] = min;
 			}
 		}
-		for(int i=0; i<observationInput.size()+1;i++)
-			cout<<ViterbiTableTwo[0][i]<<" ";
-		cout<<"\n";
-		for(int i=0; i<observationInput.size()+1;i++)
-			cout<<ViterbiTableTwo[1][i]<<" ";
-		cout<<"\n";
-		for(int i=0; i<observationInput.size()+1;i++)
-			cout<<ViterbiTableTwo[2][i]<<" ";
-		cout<<"\n\n";
+		// for(int i=0; i<observationInput.size()+1;i++)
+		// 	cout<<ViterbiTableTwo[0][i]<<" ";
+		// cout<<"\n";
+		// for(int i=0; i<observationInput.size()+1;i++)
+		// 	cout<<ViterbiTableTwo[1][i]<<" ";
+		// cout<<"\n";
+		// for(int i=0; i<observationInput.size()+1;i++)
+		// 	cout<<ViterbiTableTwo[2][i]<<" ";
+		// cout<<"\n\n";
 //----------------------------------sceond verbiti table above-----------------------------------
 
-		int backTrace4[observationInput.size()];
-		minFinalValue = 0;//int minFinalValue = 0;
-		//double curVal = ViterbiTable[0][observationInput.size()];
+		int backTrace4[observationInput.size()+1];
+		minFinalValue = 0;
+		curVal = ViterbiTableTwo[0][observationInput.size()];
 		for(int i=0; i<3; i++)
 		{
 			if( ViterbiTableTwo[i][observationInput.size()] < curVal)
@@ -314,15 +314,41 @@ int main (int argc,char* argv[])
 
 		backTrace4[observationInput.size()] = minFinalValue;
 
-		for(int i=0; i < observationInput.size(); i++)
+		for(int i=observationInput.size(); i > 0; i--)
 		{
 			backTrace4[i-1] = backTraceTableTwo[minFinalValue][i]; 
 			minFinalValue = backTraceTableTwo[minFinalValue][i];
 		}
 
-		for(int i=0; i<observationInput.size()+1;i++)
-			cout<<backTrace4[i]<<" ";
-		cout<<"\n";
+		// for(int i=0; i<observationInput.size()+1;i++)
+		// 	cout<<backTrace4[i]<<" ";
+		// cout<<"\n";
+
+		// for(int i=0; i<observationInput.size()+1;i++)
+		// 	cout<<originalInput[i]<<" ";
+		// cout<<"\n";
+//--------------------------------------------------------final conparson above -- ------------------------------
+		int count = 0;
+		string convertedString = "";
+		for(int i=1; i < originalInput.size()+1;i++)
+		{
+			if(backTrace4[i] == 0)
+				convertedString += "B";
+			else if(backTrace4[i] == 1)
+				convertedString += "L";
+			else if(backTrace4[i] == 2)
+				convertedString += "M";
+		}
+
+		for(int i=0; i < originalInput.size(); i++)
+		{
+			if(originalInput[i] == convertedString[i])
+				count++;
+		}
+
+		double finalProballity = ((double)count/(double)originalInput.size());
+		cout<<finalProballity<<endl;
+
 
 	}
 	return 0;
