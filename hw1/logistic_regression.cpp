@@ -66,15 +66,14 @@ int main(int argc, char* argv[])
 		double hVariable = 0.0;
 
 		srand(time(NULL));
-		int randChoice = rand()% inputMatrix.size()-1 + 0;
-
+		int randChoice = rand()% inputMatrix.size();
+		cout<<randChoice<<endl;
 		wxVariable = ( initalWeights[0]*inputMatrix[randChoice][0] + 
 					   initalWeights[1]*inputMatrix[randChoice][1] +
 					   initalWeights[2]*inputMatrix[randChoice][2] + 
 					   initalWeights[3]*inputMatrix[randChoice][3] );
 
 		// cout<< randChoice <<endl;
-
 		hVariable = 1.0 / (1.0 + exp(-wxVariable));
 
 		//cout<<hVariable<<endl;
