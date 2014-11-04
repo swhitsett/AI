@@ -6,9 +6,10 @@
 #include <fstream>
 #include <vector>
 #include <time.h>
+#include <iomanip>
 
 using namespace std;
-vector< vector<int> > inputMatrix;
+vector< vector<double> > inputMatrix;
 vector<int> classLables;
 vector<double> initalWeights;
 double alpha = 0.01;
@@ -20,7 +21,7 @@ int main(int argc, char* argv[])
 	openFile.open(argv[1]);
 	if(openFile.is_open())
 	{
-		   vector<int> x;
+		   vector<double> x;
 		   string line;
 
 	   while(!openFile.eof())
@@ -28,7 +29,7 @@ int main(int argc, char* argv[])
 		   getline(openFile,line);
 
 		   istringstream iss(line);
-		   int number;
+		   double number;
 		   
 		   x.push_back(1);
 		   while(iss >> number)
@@ -65,27 +66,31 @@ int main(int argc, char* argv[])
 		double hVariable = 0.0;
 
 		srand(time(NULL));
-		int randChoice = rand()% inputMatrix.size() + 0;
+		int randChoice = rand()% inputMatrix.size()-1 + 0;
 
 		wxVariable = ( initalWeights[0]*inputMatrix[randChoice][0] + 
 					   initalWeights[1]*inputMatrix[randChoice][1] +
 					   initalWeights[2]*inputMatrix[randChoice][2] + 
 					   initalWeights[3]*inputMatrix[randChoice][3] );
 
-		hVariable = 1 / (1 + exp(-wxVariable));
+		// cout<< randChoice <<endl;
+
+		hVariable = 1.0 / (1.0 + exp(-wxVariable));
+
+		//cout<<hVariable<<endl;
 
 		double weight = 0.0;
 
 		for(int i=0;i<4;i++)
 		{
 			initalWeights[i] = initalWeights[i] + alpha *
-							   ((double)classLables[i] - wxVariable) * 
-							   wxVariable * (1.0 - wxVariable) * 
-							   (double)inputMatrix[randChoice][i];
+							   ((double)classLables[randChoice] - hVariable) * 
+							   hVariable * (1.0 - hVariable) * 
+							   inputMatrix[randChoice][i];
 		}
 	}
 	for(int i=0;i<4;i++)
-		cout<<initalWeights[i]<<endl;
+		cout<<setprecision(16)<<initalWeights[i]<<endl;
 	//cout<<inputMatrix[0][0]<<endl;
 	// for(vector< vector<int> >::iterator yt = inputMatrix.begin(); yt != inputMatrix.end(); ++yt)
 	// {
