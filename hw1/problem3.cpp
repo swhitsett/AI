@@ -1,3 +1,10 @@
+/**
+	This is a program that  finds the nearest neighbors using 
+	Euclidean distance.
+
+	The hanhattan distance (qArray) is hard codded. change if neccary
+**/
+
 #include <iostream>
 #include <math.h>
 #include <stdlib.h>
@@ -10,10 +17,6 @@
 
 using namespace std;
 vector< vector<double> > inputMatrix;
-vector<int> classLables;
-vector<double> initalWeights;
-double alpha = 0.01;
-int itterations = 0;
 
 int main(int argc, char* argv[])
 {
@@ -31,7 +34,6 @@ int main(int argc, char* argv[])
 		   istringstream iss(line);
 		   double number;
 		   
-		   //x.push_back(1);
 		   while(iss >> number)
 		      x.push_back(number);
 
@@ -42,44 +44,17 @@ int main(int argc, char* argv[])
 		openFile.close();
 	}
 
-	// openFile.open(argv[2]);
-	// if(openFile.is_open())
-	// {
-	// 	while(!openFile.eof())
-	// 	{
-	// 		int i = 0;
-	// 		openFile >> i;
-	// 		classLables.push_back(i);
-	// 	}
-
-	// 	openFile.close();
-	// }
-
-	int mrArray[3] ={3,2,3} ;
-	for(int y=0;y<inputMatrix.size();y++)
+	int qArray[3] ={4,3,2} ;
+	for(int y=0;y<inputMatrix.size()-1;y++)
 	{
 		double tmp = 0.0;
 		for(int i=0;i<3;i++)
 		{
-			tmp += pow(mrArray[i] - inputMatrix[y][i], 2.0);
+			tmp += pow(qArray[i] - inputMatrix[y][i], 2.0);
 		}
 		inputMatrix[y][4] = sqrt(tmp);
+		cout<<inputMatrix[y][4]<<endl;
 	}
-
 	
-	
-	// for(int i=0;i<4;i++)
-	// 	cout<<setprecision(16)<<inputMatrix[i][4]<<endl;
-	//cout<<inputMatrix[0][0]<<endl;
-	// for(vector< vector<int> >::iterator yt = inputMatrix.begin(); yt != inputMatrix.end(); ++yt)
-	// {
-	// 	for(vector<int>::iterator xt = yt->begin(); xt != yt->end(); ++xt)
-	// 	{
-	// 		cout<< *xt<<" ";
-	// 	}
-	// 	cout<<"\n";
-	// }
-	
-
 	return 0;
 }

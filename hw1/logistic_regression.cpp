@@ -1,3 +1,8 @@
+/**
+	This is an implimatation of Logistic regression.
+	
+**/
+
 #include <iostream>
 #include <math.h>
 #include <stdlib.h>
