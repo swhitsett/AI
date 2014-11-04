@@ -100,7 +100,7 @@ int main (int argc,char* argv[])
 	   double ViterbiTable[3][observationInput.size()+1];
 	   int backTraceTable[3][observationInput.size()+1];
 	   for(int i = 0; i < 3; i++)
-	   	ViterbiTable[i][0] = -log2(1.0/3.0); 							// assuming that the states are 3 aka 1/3
+	   	ViterbiTable[i][0] = -log2(0.333333333); 							// assuming that the states are 3 aka 1/3
 	   for(int i = 0; i < 3; i++)													//backtrace Table Initlization.
 	   	backTraceTable[i][0] = 0;
 
@@ -187,7 +187,7 @@ int main (int argc,char* argv[])
 			{
 				for(int i=1;i<observationInput.size()+1;i++) 				// observation itteration
 				{
-					if(backTrace2[i] == curLetter[l])   // changed the curLetter[j] to curLetter[l] to get it to work.
+					if(backTrace2[i-1] == curLetter[l])   // changed the curLetter[j] to curLetter[l] to get it to work.
 					{
 						amountInString++;
 					}
@@ -196,20 +196,20 @@ int main (int argc,char* argv[])
 						relationCount++;
 					}
 				}
-				transtionModelTable[j][l] = (relationCount + smoothingValue)/(amountInString + 3*smoothingValue);
+				transtionModelTable[j][l] = (relationCount + 1.0)/(amountInString + 3*1.0);
 				amountInString = 0.0;
 				relationCount = 0.0;
 			}
 		}
 		cout<<"Transition Probalities Learned:"<<endl;	
 		for(int i=0; i<3;i++)
-			printf("%.6g ",transtionModelTable[0][i]);
+			printf("%.6g ",transtionModelTable[0][i]);//cout<<transtionModelTable[0][i]<<" ";
 		cout<<"\n";
 		for(int i=0; i<3;i++)
-			printf("%.6g ",transtionModelTable[1][i]);
+			printf("%.6g ",transtionModelTable[1][i]);//cout<<transtionModelTable[1][i]<<" ";
 		cout<<"\n";
 		for(int i=0; i<3;i++)
-			printf("%.6g ",transtionModelTable[2][i]);
+			printf("%.6g ",transtionModelTable[2][i]);//cout<<transtionModelTable[2][i]<<" ";
 		cout<<"\n\n";
 //-------------------------------------------------transformitive moddle above------------------------------------------------------
 
@@ -227,7 +227,7 @@ int main (int argc,char* argv[])
 			{
 				for(int i=1;i<observationInput.size()+1;i++) 				// observation itteration
 				{
-					if(backTrace2[i] == j)   //if the backTrace2 array contains a b l m
+					if(backTrace2[i-1] == j)   //if the backTrace2 array contains a b l m
 					{
 						amountInString++;
 					}
@@ -236,20 +236,20 @@ int main (int argc,char* argv[])
 						relationCount++;
 					}
 				}
-				sensoryModelTable[j][l] = (relationCount + smoothingValue)/(amountInString + 2*smoothingValue);
+				sensoryModelTable[j][l] = (relationCount + 1.0)/(amountInString + 2*1.0);
 				amountInString = 0.0;
 				relationCount = 0.0;
 			}
 		}
 		cout<<"Sensory Probalites Learned:"<<endl;
 		for(int i=0; i<2;i++)
-			printf("%.6g ",sensoryModelTable[0][i]);
+			printf("%.6g ",transtionModelTable[2][i]);//cout<<sensoryModelTable[0][i]<<" ";
 		cout<<"\n";
 		for(int i=0; i<2;i++)
-			printf("%.6g ",sensoryModelTable[1][i]);
+			printf("%.6g ",sensoryModelTable[1][i]);//cout<<sensoryModelTable[1][i]<<" ";
 		cout<<"\n";
 		for(int i=0; i<2;i++)
-			printf("%.6g ",sensoryModelTable[2][i]);
+			printf("%.6g ",sensoryModelTable[2][i]);//cout<<sensoryModelTable[2][i]<<" ";
 		cout<<"\n\n";
 //----------------------------------------sensory model above-----------------------------
 

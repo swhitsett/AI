@@ -67,30 +67,33 @@ int main(int argc, char* argv[])
 	
 	for(int i=0;i<itterations;i++)
 	{
-		double wxVariable = 0.0;
-		double hVariable = 0.0;
-
-		srand(time(NULL));
-		int randChoice = rand()% inputMatrix.size();
-		cout<<randChoice<<endl;
-		wxVariable = ( initalWeights[0]*inputMatrix[randChoice][0] + 
-					   initalWeights[1]*inputMatrix[randChoice][1] +
-					   initalWeights[2]*inputMatrix[randChoice][2] + 
-					   initalWeights[3]*inputMatrix[randChoice][3] );
-
-		// cout<< randChoice <<endl;
-		hVariable = 1.0 / (1.0 + exp(-wxVariable));
-
-		//cout<<hVariable<<endl;
-
-		double weight = 0.0;
-
-		for(int i=0;i<4;i++)
+		for(int c=0;c<inputMatrix.size();c++)
 		{
-			initalWeights[i] = initalWeights[i] + alpha *
-							   ((double)classLables[randChoice] - hVariable) * 
-							   hVariable * (1.0 - hVariable) * 
-							   inputMatrix[randChoice][i];
+			double wxVariable = 0.0;
+			double hVariable = 0.0;
+
+			// srand(time(NULL));
+			// int randChoice = rand()% inputMatrix.size();
+			// cout<<randChoice<<endl;
+			wxVariable = ( initalWeights[0]*inputMatrix[c][0] + 
+						   initalWeights[1]*inputMatrix[c][1] +
+						   initalWeights[2]*inputMatrix[c][2] + 
+						   initalWeights[3]*inputMatrix[c][3] );
+
+			// cout<< randChoice <<endl;
+			hVariable = 1.0 / (1.0 + exp(-wxVariable));
+
+			//cout<<hVariable<<endl;
+
+			double weight = 0.0;
+
+			for(int v=0;v<4;v++)
+			{
+				initalWeights[v] = initalWeights[v] + alpha *
+								   ((double)classLables[c] - hVariable) * 
+								   hVariable * (1.0 - hVariable) * 
+								   inputMatrix[c][v];
+			}
 		}
 	}
 	for(int i=0;i<4;i++)
