@@ -9,6 +9,7 @@
 #include <stdlib.h>
 using namespace std;
 
+vector< vector<double> > out_encoding;
 vector< vector<double> > train_input;
 vector< vector<double> > test_input;
 vector< vector<double> > weights;
@@ -19,6 +20,7 @@ int itterations;
 
 void recordMatrix(ifstream&, vector< vector<double> >&);
 void recordArray(ifstream&, vector< int >&);
+void createEncoding(vector< vector<double> >&);
 
 int main (int argc, char *argv[])
 {
@@ -46,8 +48,8 @@ int main (int argc, char *argv[])
       recordMatrix(openFile,weights);
       //k aka itterations
       itterations = atoi(argv[7]);
-      for(int i=0;i<structure_input.size()-1;i++)
-         cout<<structure_input[i]<<endl;
+      //create encoding
+      createEncoding(out_encoding);
    } 
    return 0;
 }
@@ -86,5 +88,24 @@ void recordMatrix(ifstream& file, vector< vector<double> >& vec)
          y.clear();
       }
       file.close();
+   }
+}
+
+void createEncoding(vector< vector< double> >& vec)
+{
+   for(int y=0; y<10; y++)
+   {
+      vector<double> v;
+      for(int x=0;x<10; x++)
+      {
+         double num;
+         if(y == x)
+            num = 0.1;
+         else
+            num = 0.9;
+
+         v.push_back(num);
+      }
+      vec.push_back(v);
    }
 }
