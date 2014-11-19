@@ -6,6 +6,7 @@
 #include <sstream>
 #include <vector>
 #include <cstring>
+#include <stdlib.h>
 using namespace std;
 
 vector< vector<double> > train_input;
@@ -21,127 +22,47 @@ void recordArray(ifstream&, vector< int >&);
 
 int main (int argc, char *argv[])
 {
-   if (argc == 7)
+   if (argc == 8)
    {
 
 		ifstream openFile;
       //train input
 		openFile.open(argv[1]);
       recordMatrix(openFile,train_input);
-		// if(openFile.is_open())
-		// {
-		// 	vector<double> y;
-		// 	string current_line;
-
-		// 	while(!openFile.eof())
-		// 	{
-		// 		getline(openFile, current_line);
-
-		// 		double x;
-		// 		istringstream iss(current_line);
-
-		// 		while(iss >> x)
-		// 			y.push_back(x);
-
-		// 		train_input.push_back(y);
-		// 		y.clear();
-		// 	}
-		// 	openFile.close();
-		// }
       //train output
       openFile.open(argv[2]);
-      if(openFile.is_open())
-      {
-         while(!openFile.eof())
-         {
-            int number;
-            openFile >> number;
-            train_output.push_back(number);
-         }
-         openFile.close();
-      }
+      recordArray(openFile, train_output);
       //test input
       openFile.open(argv[3]);
       recordMatrix(openFile, test_input);
-      // if(openFile.is_open())
-      // {
-      //    vector<double> y;
-      //    string current_line;
-
-      //    while(!openFile.eof())
-      //    {
-      //       getline(openFile, current_line);
-
-      //       double x;
-      //       istringstream iss(current_line);
-
-      //       while(iss >> x)
-      //          y.push_back(x);
-
-      //       test_input.push_back(y);
-
-      //       // x_component = x.size();  //for getting the size of the array prob not needed.
-      //       // y_component = train_input.size();
-      //       y.clear();
-      //    }
-      //    openFile.close();
-      // }
       //test output
       openFile.open(argv[4]);
-      if(openFile.is_open())
-      {
-         while(!openFile.eof())
-         {
-            int number;
-            openFile >> number;
-            test_output.push_back(number);
-         }
-         openFile.close();
-      }
+      recordArray(openFile, test_output);
       // structure
       openFile.open(argv[5]);
-      if(openFile.is_open())
-      {
-         while(!openFile.eof())
-         {
-            int number;
-            openFile >> number;
-            structure_input.push_back(number);
-         }
-         openFile.close();
-      }
+      recordArray(openFile, structure_input);
       // weights
       openFile.open(argv[6]);
       recordMatrix(openFile,weights);
-      // if(openFile.is_open())
-      // {
-      //    vector<double> y;
-      //    string current_line;
-
-      //    while(!openFile.eof())
-      //    {
-      //       getline(openFile, current_line);
-
-      //       double x;
-      //       istringstream iss(current_line);
-
-      //       while(iss >> x)
-      //          y.push_back(x);
-
-      //       weights.push_back(y);
-
-      //       // x_component = x.size();  //for getting the size of the array prob not needed.
-      //       // y_component = train_input.size();
-      //       y.clear();
-      //    }
-      //    openFile.close();
-      // }
-      // k
-      openFile.open(argv[7]);
-      if(openFile.is_open())
-         cin >> itterations;
+      //k aka itterations
+      itterations = atoi(argv[7]);
+      for(int i=0;i<structure_input.size()-1;i++)
+         cout<<structure_input[i]<<endl;
    } 
    return 0;
+}
+void recordArray(ifstream& file, vector< int >& vec)
+{
+   if(file.is_open())
+   {
+      while(!file.eof())
+      {
+         int number;
+         file >> number;
+         vec.push_back(number);
+      }
+      file.close();
+   }
 }
 
 void recordMatrix(ifstream& file, vector< vector<double> >& vec)
@@ -162,9 +83,6 @@ void recordMatrix(ifstream& file, vector< vector<double> >& vec)
             y.push_back(x);
 
          vec.push_back(y);
-
-         // x_component = x.size();  //for getting the size of the array prob not needed.
-         // y_component = train_input.size();
          y.clear();
       }
       file.close();
