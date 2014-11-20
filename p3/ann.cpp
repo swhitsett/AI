@@ -7,6 +7,7 @@
 #include <vector>
 #include <cstring>
 #include <stdlib.h>
+#include <math.h>
 using namespace std;
 
 vector< vector<double> > out_encoding;
@@ -22,6 +23,7 @@ int itterations;
 void recordMatrix(ifstream&, vector< vector<double> >&);
 void recordArray(ifstream&, vector< int >&);
 void createEncoding(vector< vector<double> >&);
+double inCalc(int,int);
 void run();
 
 int main (int argc, char *argv[])
@@ -54,23 +56,44 @@ int main (int argc, char *argv[])
       createEncoding(out_encoding);
       //run back propragation
       run();
+      cout<<neural_network[2][2];
    } 
    return 0;
 }
 void run()
 {
+   vector<double> v;
    double new_weight;
    int struct_postion = 0;
+
+   // neural_network.resize(structure_input.size());
+   // //error.resize(structure_input.size());
+   // for(unsigned i = 0; i < neural_network.size(); i++)
+   // {
+   //   neural_network[i].resize(structure_input.at(i));
+   //   //error[i].resize(structure_input.at(i));
+   // }
+
    for(int itter; itter<itterations; itter++)
    {
       for (int tRow=0; tRow<train_input.size()-1; tRow++)                  //tRow = move y in trainI
       {
-         for(int i=1; i<structure_input.size(); i++)                       //i = move throught structure *
+         for(int i=1; i<structure_input.size()-1; i++)                       //i = move throught structure *
          {
             for(int j=0; j<structure_input[i]; j++)
             {
-               neural_network[i][j] = asdfasfd
+               v.push_back(1.0 / (1.0 + exp(-inCalc(i,j))));// neural_network[i][j] = (1.0 / (1.0 + exp(-inCalc(i,j))));
             }
+            neural_network.push_back(v);
+            v.clear();
+         }
+         // for(int k =0; k<neural_network.back().size(); k++)
+         // {
+         //    double aj = neural_network.back()[k];
+         //    double yj = out_encoding[train_output.at(tRow)][k];
+         //    //error.back()[k] = aj*(1 - aj)*(yj - aj);
+         // }
+         // //--------------------------------------------------
             // for(int j=0; j<structure_input[i]; j++)                        //j = move through nodes in hidden layer top>down
             // {
             //    for(int k=0; k<train_input.at(1).size(); k++)               //k = move x in trainI
@@ -87,21 +110,19 @@ void run()
             //       struct_postion = struct_postion + structure_input[i-1];
             //    }
             // }
-         }
       }
    }
-   // for(int i=0; i<train_input.size()-1; i++)         //i = train input y
-   // {
-   //    for(int j=0;j<structure[x];j++)  //j = train input x
-   //    {
-   //       for(int k=0;k<structure.at(j).size();k++)   //k = weights itterator
-   //       {
-
-   //          calculated_layer_values[point_of_structure][layer] = calculated_layer_values[][] + (train_input[i][j] * weights[j][k])
-   //       }
-   //    }
-   // }
 }
+double inCalc(int i, int j)
+{
+   double result = 0.0;
+   for(int x=0; x<structure_input[i -1]; x++)
+   {
+      result += train_input[j][x] * weights[x][j];
+   }
+   return result + 0,01;
+}
+
 void recordArray(ifstream& file, vector< int >& vec)
 {
    if(file.is_open())
