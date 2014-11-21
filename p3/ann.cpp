@@ -15,6 +15,7 @@ vector< vector<double> > train_input;
 vector< vector<double> > test_input;
 vector< vector<double> > weights;
 vector< vector<double> > neural_network;
+vector< vector<double> > error_network;
 vector< int > train_output;
 vector< int > test_output;
 vector< int > structure_input;
@@ -56,7 +57,17 @@ int main (int argc, char *argv[])
       createEncoding(out_encoding);
       //run back propragation
       run();
-      cout<<neural_network[2][2];
+      
+      for(int a=0; a<3; a++)
+      {
+         for(int b=0; b<neural_network.at(a).size(); b++)
+         {
+            cout<<neural_network[a][b]<< " ";
+         }
+         cout<<"\n";
+      }
+      // cout<<neural_network[0][0]<<endl;
+      //cout<<structure_input.back()<<endl;
    } 
    return 0;
 }
@@ -66,14 +77,6 @@ void run()
    double new_weight;
    int struct_postion = 0;
 
-   // neural_network.resize(structure_input.size());
-   // //error.resize(structure_input.size());
-   // for(unsigned i = 0; i < neural_network.size(); i++)
-   // {
-   //   neural_network[i].resize(structure_input.at(i));
-   //   //error[i].resize(structure_input.at(i));
-   // }
-
    for(int itter; itter<itterations; itter++)
    {
       for (int tRow=0; tRow<train_input.size()-1; tRow++)                  //tRow = move y in trainI
@@ -82,34 +85,13 @@ void run()
          {
             for(int j=0; j<structure_input[i]; j++)
             {
-               v.push_back(1.0 / (1.0 + exp(-inCalc(i,j))));// neural_network[i][j] = (1.0 / (1.0 + exp(-inCalc(i,j))));
+               v.push_back(1.0 / (1.0 + exp(-inCalc(i,j))));
             }
             neural_network.push_back(v);
             v.clear();
          }
-         // for(int k =0; k<neural_network.back().size(); k++)
-         // {
-         //    double aj = neural_network.back()[k];
-         //    double yj = out_encoding[train_output.at(tRow)][k];
-         //    //error.back()[k] = aj*(1 - aj)*(yj - aj);
-         // }
-         // //--------------------------------------------------
-            // for(int j=0; j<structure_input[i]; j++)                        //j = move through nodes in hidden layer top>down
-            // {
-            //    for(int k=0; k<train_input.at(1).size(); k++)               //k = move x in trainI
-            //    {
-            //       for(int l=struct_postion; l<structure_input[i-1]; l++)   //l = move y in weights
-            //       {
-            //          for(int m=0; m<weights.at(l).size(); m++)             //m = move x in weights
-            //          {
-            //             new_weight = new_weight + (train_input[tRow][k] * weights[l][m]);
-            //             // calculated_layer_values.at(i-1).push_back( new_weight );
-            //          }
-            //          calculated_layer_values.push_back( 0.01 + new_weight );
-            //       }
-            //       struct_postion = struct_postion + structure_input[i-1];
-            //    }
-            // }
+         for(int asdf=0;asdf<4; asdf++)
+            cout<<"hi";
       }
    }
 }
@@ -120,7 +102,7 @@ double inCalc(int i, int j)
    {
       result += train_input[j][x] * weights[x][j];
    }
-   return result + 0,01;
+   return result + 0.01;
 }
 
 void recordArray(ifstream& file, vector< int >& vec)
