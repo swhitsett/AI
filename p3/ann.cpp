@@ -35,9 +35,9 @@ int main (int argc, char *argv[])
    if (argc == 8)
    {
 
-		ifstream openFile;
+    ifstream openFile;
       //train input
-		openFile.open(argv[1]);
+    openFile.open(argv[1]);
       recordMatrix(openFile,train_input);
       //train output
       openFile.open(argv[2]);
@@ -59,6 +59,8 @@ int main (int argc, char *argv[])
       //create encoding
       createEncoding(out_encoding);
       //run back propragation
+      // for(int i=0; i<structure_input.size(); i++)
+      //   cout<<structure_input[i]<<endl;
       run();
       
       printthis();
@@ -67,47 +69,41 @@ int main (int argc, char *argv[])
 }
 void run()
 {
-   vector<double> v;
-   double new_weight;
-   int struct_postion = 0;
-
+   neural_network.resize(structure_input.size());
+    error_network.resize(structure_input.size());
+    for(int i = 0; i < neural_network.size(); i++)
+    {
+        neural_network[i].resize(structure_input.at(i));
+        error_network[i].resize(structure_input.at(i));
+    }
    //neural_network.push_back(train_input.at(0));
-   neural_network.push_back(train_input.at(0));
 
-   for(int iter; iter<itterations; iter++)
+   for(int iter=0; iter<itterations; iter++)
    {
       for (int tRow=0; tRow<train_input.size()-1; tRow++)                  //tRow = move y in trainI
       {
-         // neural_network.push_back(train_input.at(tRow));
+         neural_network[0] = train_input.at(tRow);// neural_network.push_back(train_input.at(tRow));
 
-         for(int i=1; i<structure_input.size()-1; i++)                       //i = move throught structure *
+         for(int i=1; i<structure_input.size(); i++)                       //i = move throught structure *
          {
-            for(int j=0; j<neural_network.at(i-1).size(); j++)
+            for(int j=0; j<neural_network.at(i).size(); j++)
             {
-               v.push_back(1.0 / (1.0 + exp(-inCalc(i,j))));
+               neural_network[i][j] =  (1.0 / (1.0 + exp(-inCalc(i,j))));// v.push_back(1.0 / (1.0 + exp(-inCalc(i,j))));
             }
-            neural_network.push_back(v);
-            v.clear();
          }
-         // cout<<neural_network[tRow][0] <<" "<<neural_network[tRow][1]<<endl;
-         // if( tRow == 2)
-         //    assert(false);
-         //printthis();
-         //calculateError(tRow);
-         //poop();
-         // for(int asdf=0;asdf<4; asdf++)
-         //    cout<<"hi";
+         for(int k = 0; k < neural_network.back().size(); k++)
+          {
+              double aj = neural_network.back()[k];
+              double yj = out_encoding[train_output.at(tRow)][k];
+              // error_network.back()[k] = aj*(1 - aj)*(yj - aj);
+          }
       }
    }
-   // for(int asdf=0;asdf<4; asdf++)
-   // {
-   //    cout<<"hi";
-   // }
 }
 
 void printthis()
 {
-   for(int a=0; a<neural_network.size()-1; a++)
+   for(int a=0; a<neural_network.size(); a++)
    {
       for(int b=0; b<neural_network.at(a).size(); b++)
       {
@@ -121,9 +117,7 @@ double inCalc(int i, int j)
 {
    int indexBuffer = 0;
    for(int iter = 0; iter < i-1; iter++)
-   {
      indexBuffer += structure_input.at(iter);
-   }
 
    double result = 0.0;// = neural_network[i-1][j];
    for(int x=0; x<structure_input[i -1]; x++)
@@ -135,16 +129,12 @@ double inCalc(int i, int j)
 
 void recordArray(ifstream& file, vector< int >& vec)
 {
-   if(file.is_open())
-   {
-      while(!file.eof())
+      string value;
+      while(getline(file, value))
       {
-         int number;
-         file >> number;
-         vec.push_back(number);
+          vec.push_back(atoi(value.c_str()));        
       }
       file.close();
-   }
 }
 
 void recordMatrix(ifstream& file, vector< vector<double> >& vec)
