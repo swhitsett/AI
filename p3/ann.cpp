@@ -17,9 +17,11 @@ vector< vector<double> > test_input;
 vector< vector<double> > weights;
 vector< vector<double> > neural_network;
 vector< vector<double> > error_network;
+vector< vector<double> > dummy;
 vector< int > train_output;
 vector< int > test_output;
 vector< int > structure_input;
+vector< int > results;
 int itterations;
 
 void recordMatrix(ifstream&, vector< vector<double> >&);
@@ -27,6 +29,7 @@ void recordArray(ifstream&, vector< int >&);
 void createEncoding(vector< vector<double> >&);
 double inCalc(int,int);
 void calculateError(int);
+int layerFromWeightRow(int);
 void run();
 void printthis();
 
@@ -62,7 +65,7 @@ int main (int argc, char *argv[])
       // for(int i=0; i<structure_input.size(); i++)
       //   cout<<structure_input[i]<<endl;
       run();
-      
+      cout<<"number of iterations"<<" "<<itterations<<endl;
       printthis();
    } 
    return 0;
@@ -75,6 +78,15 @@ void run()
     {
         neural_network[i].resize(structure_input.at(i));
         error_network[i].resize(structure_input.at(i));
+    }
+    for(int i = 0; i < neural_network.size(); i++)
+    {
+        vector<double> row;
+        for(int j = 0; j < neural_network[i].size(); j++)
+        {
+            row.push_back(0.01);
+        }
+        dummy.push_back(row);
     }
    //neural_network.push_back(train_input.at(0));
 
@@ -95,22 +107,76 @@ void run()
           {
               double aj = neural_network.back()[k];
               double yj = out_encoding[train_output.at(tRow)][k];
-              // error_network.back()[k] = aj*(1 - aj)*(yj - aj);
+              error_network.back()[k] = aj*(1 - aj)*(yj - aj);
           }
+          for(int j = neural_network.size() - 2; j >= 0; j--)
+          {
+              // k: number of nodes in layer
+              for(int k = 0; k < neural_network[j].size(); k++)
+              {
+                  double sum = 0;
+                  double left = 0;
+                  double right = 0;
+
+                  // l: number of nodes in next layer
+                  for(int l = 0; l < structure_input.at(j+1); l++)
+                  {
+                      // int buf = errorBuffer(j);
+                      int offset = 0;
+                      for(int i = 0; i < j; i++)
+                          offset += structure_input.at(i);
+
+                      left = error_network[j+1][l];
+                      right = weights.at(offset + k)[l]; // J WAS INDEXBUFFER
+                      sum += left*right;
+                  }
+                  double ai = neural_network[j][k];
+                  error_network[j][k] = ai*(1-ai)*sum;
+              }
+          }
+          for(int j = 0; j < dummy.size(); j++)
+          {
+              for(int k = 0; k < dummy[j].size(); k++)
+              {
+                  dummy[j][k] = dummy[j][k] + (0.01 * error_network[j][k]);
+              }
+          }
+          for(int j = 0; j < weights.size(); j++)
+          {
+              // k: number of elements in current weight table row
+              for(int k = 0; k < weights.at(j).size(); k++)
+              {
+                  int layer = layerFromWeightRow(j);
+                  double wPrev = weights.at(j)[k];
+                  double ai = neural_network[layerFromWeightRow(j)][k];
+                  double dj = error_network[layer][k];
+                  weights.at(j)[k] = wPrev + (0.01 * ai * dj);
+              }
+          }
+          //=========================================================
+
       }
    }
 }
-
+int layerFromWeightRow(int pRow)
+{
+    int sum = 0;
+    int index = 0;
+    for(; pRow < sum; index++, sum += structure_input.at(index));
+    return index;
+}
 void printthis()
 {
-   for(int a=0; a<neural_network.size(); a++)
-   {
-      for(int b=0; b<neural_network.at(a).size(); b++)
-      {
-         cout<<neural_network[a][b]<< " ";
-      }
-      cout<<"\n";
-   }
+  int lastHiddenLayer = structure_input.size() - 2;
+  int offset = 0;
+
+  for(int i = 0; i < lastHiddenLayer; i++)
+    offset += structure_input.at(i);
+
+  for(int i = 0; i < structure_input.at(lastHiddenLayer + 1); i++)
+  {
+      printf("%.16f\n", weights.at(offset)[i]);
+  }
 }
 
 double inCalc(int i, int j)
