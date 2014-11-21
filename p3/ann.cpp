@@ -23,6 +23,7 @@ vector< int > test_output;
 vector< int > structure_input;
 vector< int > results;
 int itterations;
+double total_correct;
 
 void recordMatrix(ifstream&, vector< vector<double> >&);
 void recordArray(ifstream&, vector< int >&);
@@ -67,6 +68,7 @@ int main (int argc, char *argv[])
       run();
       cout<<"number of iterations"<<" "<<itterations<<endl;
       printthis();
+      printf("\n%f%%\n", (total_correct / test_output.size())*100);
    } 
    return 0;
 }
@@ -154,7 +156,60 @@ void run()
               }
           }
           //=========================================================
+          //results = new vector<int>();
+          for(int i = 0; i < (int)test_input.size(); i++)
+          {
+              neural_network[0] = test_input.at(i);//setInputLayer(i, test_input);
 
+              // j: number of layers
+              for(int j = 1; j < (int)structure_input.size(); j++)
+              {
+                  // k: number of nodes in layer
+                  for(int k = 0; k < (int)neural_network[j].size(); k++)
+                  {
+                      neural_network[j][k] = (1.0 / (1.0 + exp(-inCalc(i,j))));
+                  }
+              }
+
+              // Euclidean
+              double ED;
+              double eSum, left, right;                        
+              vector<double> distances;
+              for(int j = 0; j < structure_input.at(structure_input.size() - 1); j++)
+              {
+                  eSum = left = right = 0;
+                  for(int k = 0; k < structure_input.at(structure_input.size() - 1); k++)
+                  {
+                      left = out_encoding[j][k];
+                      right = neural_network[neural_network.size() - 1][k];
+                      double base = left - right;
+                      eSum += pow(base, 2.0);
+                  }            
+                  ED = sqrt(eSum);
+                  distances.push_back(ED);
+              }
+              
+              int min = 0;
+              for(int j = 0; j < distances.size(); j++)
+              {
+                  if(distances[j] < distances[min] || j ==0)
+                  {
+                      min = j;
+                  }
+              }
+              results.push_back(min);
+          }
+
+          total_correct = 0;
+          for(int i = 0; i < test_output.size(); i++)
+          {
+              if(results.at(i) == test_output.at(i))
+              {
+                  total_correct += 1;
+              }
+          }
+
+          // printf("\n%f%%\n", (total_correct / test_output.size())*100);
       }
    }
 }
