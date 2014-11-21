@@ -82,10 +82,23 @@ void run()
          {
             for(int j=0; j<structure_input[i]; j++)
             {
+                // double aj = neural_network.back()[j];
+                // double yj = output_encoding[train_output->at(i)][j];
+                //error.back()[j] = aj*(1 -
+               //cout<< 1.0 / (1.0 + exp(-inCalc(i,j)))<<" ";
                v.push_back(1.0 / (1.0 + exp(-inCalc(i,j))));// neural_network[i][j] = (1.0 / (1.0 + exp(-inCalc(i,j))));
             }
+            cout<<"\n";
             neural_network.push_back(v);
             v.clear();
+         }
+         for(int a=0;a<neural_network.size()-1; a++)
+         {
+            for(int b=0;b<neural_network.at(a).size(); b++)
+            {
+               cout<<neural_network[a][b]<< " ";
+            }
+            cout<<"\n";
          }
          // for(int k =0; k<neural_network.back().size(); k++)
          // {
@@ -118,9 +131,9 @@ double inCalc(int i, int j)
    double result = 0.0;
    for(int x=0; x<structure_input[i -1]; x++)
    {
-      result += train_input[j][x] * weights[x][j];
+      result += (train_input[j][x] * weights[x][j]);
    }
-   return result + 0,01;
+   return result + 0.01;
 }
 
 void recordArray(ifstream& file, vector< int >& vec)
