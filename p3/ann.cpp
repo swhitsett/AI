@@ -17,7 +17,7 @@ vector< vector<double> > test_input;
 vector< vector<double> > weights;
 vector< vector<double> > neural_network;
 vector< vector<double> > error_network;
-vector< vector<double> > dummy;
+vector< vector<double> > open_table;
 vector< int > train_output;
 vector< int > test_output;
 vector< int > structure_input;
@@ -30,7 +30,7 @@ void recordArray(ifstream&, vector< int >&);
 void createEncoding(vector< vector<double> >&);
 double inCalc(int,int);
 void calculateError(int);
-int layerFromWeightRow(int);
+int FromWeightRow(int);
 void run();
 void printthis();
 
@@ -86,9 +86,9 @@ void run()
         vector<double> row;
         for(int j = 0; j < neural_network[i].size(); j++)
         {
-            row.push_back(0.01);
+            row.push_back(0.0);
         }
-        dummy.push_back(row);
+        open_table.push_back(row);
     }
    //neural_network.push_back(train_input.at(0));
 
@@ -117,103 +117,66 @@ void run()
               for(int k = 0; k < neural_network[j].size(); k++)
               {
                   double sum = 0;
-                  double left = 0;
-                  double right = 0;
+                  double prvError = 0;
+                  double weig = 0;
 
                   // l: number of nodes in next layer
                   for(int l = 0; l < structure_input.at(j+1); l++)
                   {
-                      // int buf = errorBuffer(j);
                       int offset = 0;
                       for(int i = 0; i < j; i++)
                           offset += structure_input.at(i);
 
-                      left = error_network[j+1][l];
-                      right = weights.at(offset + k)[l]; // J WAS INDEXBUFFER
-                      sum += left*right;
+                      prvError = error_network[j+1][l];
+                      weig = weights.at(offset + k)[l]; 
+                      sum += prvError*weig;
                   }
                   double ai = neural_network[j][k];
                   error_network[j][k] = ai*(1-ai)*sum;
               }
           }
-          for(int j = 0; j < dummy.size(); j++)
+          for(int j = 0; j < open_table.size(); j++)
           {
-              for(int k = 0; k < dummy[j].size(); k++)
+              for(int k = 0; k < open_table[j].size(); k++)
               {
-                  dummy[j][k] = dummy[j][k] + (0.01 * error_network[j][k]);
+                  open_table[j][k] = open_table[j][k] + (0.01 * error_network[j][k]);
               }
           }
           for(int j = 0; j < weights.size(); j++)
           {
-              // k: number of elements in current weight table row
+
               for(int k = 0; k < weights.at(j).size(); k++)
               {
-                  int layer = layerFromWeightRow(j);
+                  int layer = FromWeightRow(j);
                   double wPrev = weights.at(j)[k];
-                  double ai = neural_network[layerFromWeightRow(j)][k];
+                  double ai = neural_network[FromWeightRow(j)][k];
                   double dj = error_network[layer][k];
                   weights.at(j)[k] = wPrev + (0.01 * ai * dj);
               }
           }
           //=========================================================
-          //results = new vector<int>();
-          for(int i = 0; i < (int)test_input.size(); i++)
-          {
-              neural_network[0] = test_input.at(i);//setInputLayer(i, test_input);
+          // for(int i = 0; i < (int)test_input.size(); i++)
+          // {
+          //     neural_network[0] = test_input.at(i);//setInputLayer(i, test_input);
 
-              // j: number of layers
-              for(int j = 1; j < (int)structure_input.size(); j++)
-              {
-                  // k: number of nodes in layer
-                  for(int k = 0; k < (int)neural_network[j].size(); k++)
-                  {
-                      neural_network[j][k] = (1.0 / (1.0 + exp(-inCalc(i,j))));
-                  }
-              }
+          //     // j: number of layers
+          //     for(int j = 1; j < (int)structure_input.size(); j++)
+          //     {
+          //         // k: number of nodes in layer
+          //         for(int k = 0; k < (int)neural_network[j].size(); k++)
+          //         {
+          //             neural_network[j][k] = (1.0 / (1.0 + exp(-inCalc(i,j))));
+          //         }
+          //     }
 
-              // Euclidean
-              double ED;
-              double eSum, left, right;                        
-              vector<double> distances;
-              for(int j = 0; j < structure_input.at(structure_input.size() - 1); j++)
-              {
-                  eSum = left = right = 0;
-                  for(int k = 0; k < structure_input.at(structure_input.size() - 1); k++)
-                  {
-                      left = out_encoding[j][k];
-                      right = neural_network[neural_network.size() - 1][k];
-                      double base = left - right;
-                      eSum += pow(base, 2.0);
-                  }            
-                  ED = sqrt(eSum);
-                  distances.push_back(ED);
-              }
-              
-              int min = 0;
-              for(int j = 0; j < distances.size(); j++)
-              {
-                  if(distances[j] < distances[min] || j ==0)
-                  {
-                      min = j;
-                  }
-              }
-              results.push_back(min);
-          }
-
-          total_correct = 0;
-          for(int i = 0; i < test_output.size(); i++)
-          {
-              if(results.at(i) == test_output.at(i))
-              {
-                  total_correct += 1;
-              }
-          }
+          // }
 
           // printf("\n%f%%\n", (total_correct / test_output.size())*100);
+      
       }
    }
 }
-int layerFromWeightRow(int pRow)
+int FromWeightRow(int pRow)
 {
     int sum = 0;
     int index = 0;
