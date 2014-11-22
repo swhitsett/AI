@@ -1,5 +1,6 @@
 //./ann train_input.txt train_output.txt test_input.txt test_output.txt structure.txt weights.txt k
 //./ann train_input2.txt train_output2.txt test_input2.txt test_output2.txt structure2.txt weights2.txt 10000
+#include "ann.h"
 #include <iostream>
 #include <string>
 #include <fstream>
@@ -11,179 +12,116 @@
 #include <assert.h>
 using namespace std;
 
-vector< vector<double> > out_encoding;
-vector< vector<double> > train_input;
-vector< vector<double> > test_input;
-vector< vector<double> > weights;
-vector< vector<double> > neural_network;
-vector< vector<double> > error_network;
-vector< vector<double> > open_table;
-vector< int > train_output;
-vector< int > test_output;
-vector< int > structure_input;
-vector< int > results;
-int itterations;
-double total_correct;
-
-void recordMatrix(ifstream&, vector< vector<double> >&);
-void recordArray(ifstream&, vector< int >&);
-void createEncoding(vector< vector<double> >&);
-double inCalc(int,int);
-void calculateError(int);
-int FromWeightRow(int);
-void run();
-void printthis();
-
-int main (int argc, char *argv[])
+void ann::run()
 {
-   if (argc == 8)
-   {
-
-    ifstream openFile;
-      //train input
-    openFile.open(argv[1]);
-      recordMatrix(openFile,train_input);
-      //train output
-      openFile.open(argv[2]);
-      recordArray(openFile, train_output);
-      //test input
-      openFile.open(argv[3]);
-      recordMatrix(openFile, test_input);
-      //test output
-      openFile.open(argv[4]);
-      recordArray(openFile, test_output);
-      // structure
-      openFile.open(argv[5]);
-      recordArray(openFile, structure_input);
-      // weights
-      openFile.open(argv[6]);
-      recordMatrix(openFile,weights);
-      //k aka itterations
-      itterations = atoi(argv[7]);
-      //create encoding
-      createEncoding(out_encoding);
-      //run back propragation
-      // for(int i=0; i<structure_input.size(); i++)
-      //   cout<<structure_input[i]<<endl;
-      run();
-      cout<<"number of iterations"<<" "<<itterations<<endl;
-      printthis();
-      printf("\n%f%%\n", (total_correct / test_output.size())*100);
-   } 
-   return 0;
-}
-void run()
-{
-   neural_network.resize(structure_input.size());
-    error_network.resize(structure_input.size());
-    for(int i = 0; i < neural_network.size(); i++)
-    {
-        neural_network[i].resize(structure_input.at(i));
-        error_network[i].resize(structure_input.at(i));
-    }
-    for(int i = 0; i < neural_network.size(); i++)
-    {
-        vector<double> row;
-        for(int j = 0; j < neural_network[i].size(); j++)
-        {
-            row.push_back(0.0);
-        }
-        open_table.push_back(row);
-    }
+    initalize();
    //neural_network.push_back(train_input.at(0));
 
    for(int iter=0; iter<itterations; iter++)
    {
       for (int tRow=0; tRow<train_input.size()-1; tRow++)                  //tRow = move y in trainI
       {
-         neural_network[0] = train_input.at(tRow);// neural_network.push_back(train_input.at(tRow));
+        neural_network[0] = train_input.at(tRow);// neural_network.push_back(train_input.at(tRow));
 
-         for(int i=1; i<structure_input.size(); i++)                       //i = move throught structure *
-         {
-            for(int j=0; j<neural_network.at(i).size(); j++)
-            {
-               neural_network[i][j] =  (1.0 / (1.0 + exp(-inCalc(i,j))));// v.push_back(1.0 / (1.0 + exp(-inCalc(i,j))));
-            }
-         }
-         for(int k = 0; k < neural_network.back().size(); k++)
+        for(int i=1; i<structure_input.size(); i++)                       //i = move throught structure *
+        {
+          for(int a=0; a<neural_network.at(i).size(); a++)
           {
-              double aj = neural_network.back()[k];
-              double yj = out_encoding[train_output.at(tRow)][k];
-              error_network.back()[k] = aj*(1 - aj)*(yj - aj);
+             neural_network[i][a] =  (1.0 / (1.0 + exp(-inCalc(i,a))));// v.push_back(1.0 / (1.0 + exp(-inCalc(i,a))));
           }
-          for(int j = neural_network.size() - 2; j >= 0; j--)
-          {
-              // k: number of nodes in layer
-              for(int k = 0; k < neural_network[j].size(); k++)
-              {
-                  double sum = 0;
-                  double prvError = 0;
-                  double weig = 0;
+        }
 
-                  // l: number of nodes in next layer
-                  for(int l = 0; l < structure_input.at(j+1); l++)
-                  {
-                      int offset = 0;
-                      for(int i = 0; i < j; i++)
-                          offset += structure_input.at(i);
+        calcError(tRow);
 
-                      prvError = error_network[j+1][l];
-                      weig = weights.at(offset + k)[l]; 
-                      sum += prvError*weig;
-                  }
-                  double ai = neural_network[j][k];
-                  error_network[j][k] = ai*(1-ai)*sum;
-              }
-          }
-          for(int j = 0; j < open_table.size(); j++)
-          {
-              for(int k = 0; k < open_table[j].size(); k++)
-              {
-                  open_table[j][k] = open_table[j][k] + (0.01 * error_network[j][k]);
-              }
-          }
-          for(int j = 0; j < weights.size(); j++)
-          {
+        recalcError();
+        
+        calcDummy();
 
-              for(int k = 0; k < weights.at(j).size(); k++)
-              {
-                  int layer = FromWeightRow(j);
-                  double wPrev = weights.at(j)[k];
-                  double ai = neural_network[FromWeightRow(j)][k];
-                  double dj = error_network[layer][k];
-                  weights.at(j)[k] = wPrev + (0.01 * ai * dj);
-              }
-          }
-          //=========================================================
-          // for(int i = 0; i < (int)test_input.size(); i++)
-          // {
-          //     neural_network[0] = test_input.at(i);//setInputLayer(i, test_input);
-
-          //     // j: number of layers
-          //     for(int j = 1; j < (int)structure_input.size(); j++)
-          //     {
-          //         // k: number of nodes in layer
-          //         for(int k = 0; k < (int)neural_network[j].size(); k++)
-          //         {
-          //             neural_network[j][k] = (1.0 / (1.0 + exp(-inCalc(i,j))));
-          //         }
-          //     }
-
-          // }
-
-          // printf("\n%f%%\n", (total_correct / test_output.size())*100);
-      
+        calcWeight();
       }
-   }
+    }
 }
-int FromWeightRow(int pRow)
+void ann::recalcError()
+{
+  for(int a = neural_network.size() - 2; a >= 0; a--)
+  {
+    for(int k = 0; k < neural_network[a].size(); k++)
+    {
+      double ai = neural_network[a][k];
+      double sum = 0;
+      double prvError = 0;
+      double weig = 0;
+
+      for(int l = 0; l < structure_input.at(a+1); l++)
+      {
+        int offset = 0;
+        for(int i = 0; i < a; i++)
+          offset += structure_input.at(i);
+
+        prvError = error_network[a+1][l];
+        weig = weights.at(offset + k)[l]; 
+        sum += prvError*weig;
+      }
+      error_network[a][k] = ai*(1-ai)*sum;
+    }
+  }
+}
+void ann::calcWeight()
+{
+  for(int a = 0; a < weights.size(); a++)
+  {
+    for(int k = 0; k < weights.at(a).size(); k++)
+    {
+        int layer = FromWeightRow(a);
+        double prev = weights.at(a)[k];
+        double dj = error_network[layer][k];
+        double ai = neural_network[FromWeightRow(a)][k];
+        weights.at(a)[k] = prev + (0.01 * ai * dj);
+    }
+  }
+}
+void ann::calcError(int r)
+{
+  for(int k = 0; k < neural_network.back().size(); k++)
+  {
+    double aj = neural_network.back()[k];
+    double yj = out_encoding[train_output.at(r)][k];
+    error_network.back()[k] = aj*(1 - aj)*(yj - aj);
+  }
+}
+void ann::calcDummy()
+{
+  for(int a = 0; a < open_table.size(); a++)
+    for(int k = 0; k < open_table[a].size(); k++)
+      open_table[a][k] = open_table[a][k] + (0.01 * error_network[a][k]);
+}
+void ann::initalize()
+{
+  neural_network.resize(structure_input.size());
+  error_network.resize(structure_input.size());
+  for(int i = 0; i < neural_network.size(); i++)
+  {
+      neural_network[i].resize(structure_input.at(i));
+      error_network[i].resize(structure_input.at(i));
+  }
+  for(int i = 0; i < neural_network.size(); i++)
+  {
+      vector<double> row;
+      for(int a = 0; a < neural_network[i].size(); a++)
+      {
+          row.push_back(0.0);
+      }
+      open_table.push_back(row);
+  }
+}
+int ann::FromWeightRow(int pRow)
 {
     int sum = 0;
     int index = 0;
     for(; pRow < sum; index++, sum += structure_input.at(index));
     return index;
 }
-void printthis()
+void ann::printthis()
 {
   int lastHiddenLayer = structure_input.size() - 2;
   int offset = 0;
@@ -195,23 +133,25 @@ void printthis()
   {
       printf("%.16f\n", weights.at(offset)[i]);
   }
+  printf("\n%f%%\n", (total_correct / test_output.size())*100);
+
 }
 
-double inCalc(int i, int j)
+double ann::inCalc(int i, int a)
 {
    int indexBuffer = 0;
    for(int iter = 0; iter < i-1; iter++)
      indexBuffer += structure_input.at(iter);
 
-   double result = 0.0;// = neural_network[i-1][j];
+   double result = 0.0;// = neural_network[i-1][a];
    for(int x=0; x<structure_input[i -1]; x++)
    {
-      result += neural_network[i-1][x] * weights[indexBuffer + x][j];
+      result += neural_network[i-1][x] * weights[indexBuffer + x][a];
    }
    return result + 0.01;
 }
 
-void recordArray(ifstream& file, vector< int >& vec)
+void ann::recordArray(ifstream& file, vector< int >& vec)
 {
       string value;
       while(getline(file, value))
@@ -221,7 +161,7 @@ void recordArray(ifstream& file, vector< int >& vec)
       file.close();
 }
 
-void recordMatrix(ifstream& file, vector< vector<double> >& vec)
+void ann::recordMatrix(ifstream& file, vector< vector<double> >& vec)
 {
    if(file.is_open())
    {
@@ -245,7 +185,7 @@ void recordMatrix(ifstream& file, vector< vector<double> >& vec)
    }
 }
 
-void createEncoding(vector< vector< double> >& vec)
+void ann::createEncoding()
 {
    for(int y=0; y<10; y++)
    {
@@ -260,6 +200,6 @@ void createEncoding(vector< vector< double> >& vec)
 
          v.push_back(num);
       }
-      vec.push_back(v);
+      out_encoding.push_back(v);
    }
 }
